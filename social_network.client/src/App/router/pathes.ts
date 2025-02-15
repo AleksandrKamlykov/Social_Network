@@ -25,5 +25,10 @@ export const pathes = {
         id: "auth",
         relative: "auth",
         absolute: "/auth"
+    },
+    registration:{
+        id: "registration",
+        relative: "registration",
+        absolute: "/registration"
     }
 } as const;

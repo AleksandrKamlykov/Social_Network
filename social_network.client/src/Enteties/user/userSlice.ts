@@ -1,20 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IUser, State } from "@/Enteties/user/types.ts";
 import { fetchUser } from "@/Enteties/user/userActionCreator.ts";
-import { Roles } from "@/Shared/models/roles";
 
 interface UserState extends IUser {
     userLoading: boolean;
 }
 
 const initialState: UserState = {
-    id: "123",
+    id: "",
     state: State.Inactive,
     name: "",
     nickname: "",
     email: "",
     password: "",
-    roles: [Roles.User],
+    roles: [],
     userLoading: false
    
 };

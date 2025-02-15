@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Social_network.Server.Models;
 
-namespace Social_network.Server.ApplicationDBContext
+namespace Social_network.Server.Data
 {
     public class ApplicationDBContext: DbContext
     {

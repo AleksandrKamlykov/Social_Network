@@ -6,6 +6,7 @@ import { BaseLayout } from "@/App/Layouts/BaseLayout";
 const MainPage = lazy(() => import("@/Pages/MainPage"));
 const Profile = lazy(() => import("@/Pages/Profile"));
 const AuthPage = lazy(() => import("@/Pages/Auth"));
+const RegistrationPage = lazy(() => import("@/Pages/Registration"));
 
 
 
@@ -56,9 +57,14 @@ export const AppRouter = () => {
         : createBrowserRouter([
               { path: "/*", element: <Navigate to={pathes.auth.absolute} /> },
               {
-                path: "/*",
-                element: <Navigate to={pathes.auth.absolute} />
+                path: pathes.auth.absolute,
+                element: <AuthPage/>
+            },
+            {
+                path: pathes.registration.absolute,
+                element: <RegistrationPage />
             }
+        
           ]);
 console.log(finalRouter);
     return <RouterProvider router={finalRouter} />;

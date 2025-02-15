@@ -41,4 +41,6 @@ export interface IUser {
     messages?: Message[];
     chats?: Chat[];
     friends?: IUser[];
+    createdAt?: string;
+    birthDate: string;
 }

@@ -38,5 +38,8 @@ namespace Social_network.Server.Models
      //   public IEnumerable<Chat>? Chats { get; set; }
 
         public IEnumerable<User>? Friends { get; set; }
+        public DateOnly BirthDate { get; set; }
+        public DateTime? LastModified { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
