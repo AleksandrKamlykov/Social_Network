@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Social_network.Server", "Social_network.Server\Social_network.Server.csproj", "{16B9CD65-371D-454F-A1C4-669CCC87B25B}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "social_network.client", "social_network.client\social_network.client.esproj", "{0E4B3F48-BAC6-47F1-B22A-2AA49D87CB4D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16B9CD65-371D-454F-A1C4-669CCC87B25B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16B9CD65-371D-454F-A1C4-669CCC87B25B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16B9CD65-371D-454F-A1C4-669CCC87B25B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16B9CD65-371D-454F-A1C4-669CCC87B25B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E4B3F48-BAC6-47F1-B22A-2AA49D87CB4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E4B3F48-BAC6-47F1-B22A-2AA49D87CB4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E4B3F48-BAC6-47F1-B22A-2AA49D87CB4D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{0E4B3F48-BAC6-47F1-B22A-2AA49D87CB4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E4B3F48-BAC6-47F1-B22A-2AA49D87CB4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E4B3F48-BAC6-47F1-B22A-2AA49D87CB4D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
