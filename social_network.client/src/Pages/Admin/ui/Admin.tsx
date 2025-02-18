@@ -7,7 +7,7 @@ export const Admin = () => {
     const { post, loading } = useRequest();
 
     async function addManyUsers() {
-        const { status, data } = await post('Admin/addManyUsers', manyUsers);
+        const { status, data } = await post('User/load-many-users', manyUsers);
 
         if (status === 200) {
             message.success(`Added manyusers`);

@@ -4,7 +4,6 @@ using System.Text.Json.Serialization;
 public class UserDto
 {
     public Guid Id { get; set; }
-    [JsonConverter(typeof(RoleListConverter))]
     public List<Role> Roles { get; set; }
     public State State { get; set; }
     public string Name { get; set; }
@@ -14,7 +13,6 @@ public class UserDto
     public DateOnly BirthDate { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastModified { get; set; }
-    public bool IsFollowing { get; set; } = false;
 
 
 }

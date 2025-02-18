@@ -15,7 +15,8 @@ namespace Social_network.Server.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<UserState> UserStates { get; set; }
         public DbSet<Followers> Followers { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<UserRole> AllRoles { get; set; }
+        public DbSet<UserRoles> UserRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
