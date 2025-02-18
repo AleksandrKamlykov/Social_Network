@@ -3,7 +3,6 @@ using Social_network.Server.Models;
 
 namespace Social_network.Server.Auth
 {
-
     public class PasswordHasherService
     {
         private readonly PasswordHasher<User> _passwordHasher;
@@ -23,4 +22,5 @@ namespace Social_network.Server.Auth
             return _passwordHasher.VerifyHashedPassword(user, hashedPassword, providedPassword);
         }
     }
+
 }

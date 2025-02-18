@@ -4,7 +4,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using Microsoft.IdentityModel.Tokens;
-using Social_network.Server.ViewModels;
+using Social_network.Server.DTOs;
 using Social_network.Server.Models;
 
 namespace Social_network.Server.Auth
@@ -45,7 +45,7 @@ namespace Social_network.Server.Auth
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public AuthUserViewModel? GetUserFromToken(string token)
+        public AuthUserDTO? GetUserFromToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_secret);
@@ -76,7 +76,7 @@ namespace Social_network.Server.Auth
 
 
 
-                return new AuthUserViewModel() { Id = new Guid(userIdClaim.Value), Login = "" };
+                return new AuthUserDTO() { Id = new Guid(userIdClaim.Value), Login = "" };
             }
             catch (Exception ex)
             {

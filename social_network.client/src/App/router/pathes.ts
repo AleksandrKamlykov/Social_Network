@@ -6,13 +6,9 @@ export const pathes = {
     },
     profile: {
         id: "profile",
-        relative: "profile/:ldap",
-        absolute: "/profile/{{ldap}}",
-        rating: {
-            id: "profileRating",
-            relative: "rating",
-            absolute: "/profile/{{ldap}}/rating"
-        },
+        relative: "profile/:nickname",
+        absolute: "/profile/{{nickname}}",
+   
   
     },
     admin: {
@@ -30,5 +26,10 @@ export const pathes = {
         id: "registration",
         relative: "registration",
         absolute: "/registration"
+    },
+    users:{
+        id: "users",
+        relative: "users",
+        absolute: "/users"
     }
 } as const;

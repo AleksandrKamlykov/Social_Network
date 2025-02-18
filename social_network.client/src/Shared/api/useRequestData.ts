@@ -24,6 +24,8 @@ export const useRequestData = <T = any>(): UseRequestResult<T> => {
                 url: BASE_URL + url,
                 method,
                 data: body,
+                withCredentials: true,
+
             });
             setData(response.data);
         } catch (err) {

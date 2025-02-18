@@ -1,71 +1,88 @@
-import {lazy} from "react";
-import {createBrowserRouter, Navigate, RouteObject, RouterProvider} from "react-router-dom";
-import {useAppSelector} from "@/App/store/AppStore";
-import {pathes} from "./pathes";
+import { lazy, useMemo } from "react";
+import { createBrowserRouter, Navigate, RouteObject, RouterProvider } from "react-router-dom";
+import { useAppSelector } from "@/App/store/AppStore";
+import { pathes } from "./pathes";
 import { BaseLayout } from "@/App/Layouts/BaseLayout";
+import { AuthedLayout } from "../Layouts/AuthedLayout";
+
 const MainPage = lazy(() => import("@/Pages/MainPage"));
 const Profile = lazy(() => import("@/Pages/Profile"));
 const AuthPage = lazy(() => import("@/Pages/Auth"));
 const RegistrationPage = lazy(() => import("@/Pages/Registration"));
-
-
+const UsersPage = lazy(() => import("@/Pages/Users"));
+const AdminPage = lazy(() => import("@/Pages/Admin"));
 
 const routes: RouteObject[] = [
     {
         path: "/",
-        element: <BaseLayout />,
-
+        element: <AuthedLayout />,
         children: [
             {
                 path: pathes.home.relative,
                 id: pathes.home.id,
-                element: <MainPage />
+                element: <MainPage />,
+                index: true
             },
             {
                 path: pathes.profile.relative,
                 id: pathes.profile.id,
-                element: <Profile />,
-                
+                element: <Profile />
             },
-      
             {
-                path: "/*",
+                path: pathes.users.relative,
+                id: pathes.users.id,
+                element: <UsersPage />
+            },
+            {
+                path: pathes.admin.relative,
+                id: pathes.admin.id,
+                element: <AdminPage />
+            },
+
+            {
+                path: "*",
                 element: <Navigate to={pathes.home.relative} />
             }
         ]
-    },
-    {
-        path: pathes.auth.absolute,
-        element: <AuthPage />
-    },
-    {
-        path: "/*",
-        element: <Navigate to={pathes.auth.absolute} />
     }
 ];
 
-const router = createBrowserRouter(routes);
+const notAuthedRoutes: RouteObject[] = [
+    {
+        path: pathes.registration.relative,
+        id: pathes.registration.id,
+        element: <RegistrationPage />
+    },
+    {
+        path: pathes.auth.relative,
+        id: pathes.auth.id,
+        element: <AuthPage />
+    },
+    { path: "*", element: <Navigate to={pathes.auth.relative} /> }
+];
 
 export const AppRouter = () => {
-    const { id,roles } = useAppSelector(state => state.user);
+    const { id, roles } = useAppSelector(state => state.user);
+    const hasRoles = roles.length > 0;
+    const isAuthed = Boolean(id && hasRoles);
 
-    const HasRoles = roles.length > 0;
+    const finalRoutes = useMemo(() => {
+        if (isAuthed) {
+            return routes;
+        } else {
+            return notAuthedRoutes;
+        }
+    }, [isAuthed, id, roles]);
 
+    const baseRoutes: RouteObject[] = [
+        {
+            path: "",
+            element: <BaseLayout />,
+            children: finalRoutes
+        }
+    ];
 
-    const finalRouter = id && HasRoles
-        ? router
-        : createBrowserRouter([
-              { path: "/*", element: <Navigate to={pathes.auth.absolute} /> },
-              {
-                path: pathes.auth.absolute,
-                element: <AuthPage/>
-            },
-            {
-                path: pathes.registration.absolute,
-                element: <RegistrationPage />
-            }
-        
-          ]);
-console.log(finalRouter);
-    return <RouterProvider router={finalRouter} />;
+    const browserRouter = useMemo(() => createBrowserRouter(baseRoutes), [isAuthed]);
+
+    return <RouterProvider router={browserRouter} />;
 };
