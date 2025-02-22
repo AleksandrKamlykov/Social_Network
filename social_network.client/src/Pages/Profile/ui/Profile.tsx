@@ -1,16 +1,19 @@
 import React from 'react';
 import { Layout, Card, Avatar, Row, Col } from 'antd';
-import { useAppSelector } from '@/App/store/AppStore';
 import { Posts } from '@/Widgets/posts/ui/posts';
 import { Followers } from '@/Widgets/followers/ui/followers';
+import { ProfileProvider, useProfile } from '../../../context/profileContext/profileContext';
 
-const { Header, Content } = Layout;
+const { Content } = Layout;
 
-export const Profile = () => {
+const ProfileContent: React.FC = () => {
+    const { profile, loading } = useProfile();
 
-    const user = useAppSelector(state => state.user);
-    const { name, email, birthDate, nickname, id } = user;
-    console.log(user);
+    if (loading) return <p>Loading...</p>;
+    if (!profile) return <p>User not found</p>;
+
+    const { id, name, email, birthDate, nickname } = profile;
+
     return (
         <Content style={{ padding: '20px' }}>
             <Row gutter={[16, 16]}>
@@ -24,7 +27,6 @@ export const Profile = () => {
                                 <p>Birth Date: {birthDate}</p>
                                 <p>Location: New York, USA</p>
                             </Card>
-
                         </Col>
                         <Col span={24}>
                             <Followers userId={id} />
@@ -35,13 +37,13 @@ export const Profile = () => {
                     <Card title="Gallery" style={{ marginBottom: '16px' }}>
                         <Row gutter={[16, 16]}>
                             <Col span={8}>
-                                <img src="https://via.placeholder.com/100" alt="Gallery Item" />
+                                <img src="https://picsum.photos/200/300" alt="Gallery Item" />
                             </Col>
                             <Col span={8}>
-                                <img src="https://via.placeholder.com/100" alt="Gallery Item" />
+                                <img src="https://picsum.photos/200/300" alt="Gallery Item" />
                             </Col>
                             <Col span={8}>
-                                <img src="https://via.placeholder.com/100" alt="Gallery Item" />
+                                <img src="https://picsum.photos/200/300" alt="Gallery Item" />
                             </Col>
                         </Row>
                     </Card>
@@ -51,5 +53,13 @@ export const Profile = () => {
                 </Col>
             </Row>
         </Content>
+    );
+};
+
+export const Profile: React.FC = () => {
+    return (
+        <ProfileProvider>
+            <ProfileContent />
+        </ProfileProvider>
     );
 };

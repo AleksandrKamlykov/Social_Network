@@ -15,8 +15,8 @@ namespace Social_network.Server.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<UserState> UserStates { get; set; }
         public DbSet<Followers> Followers { get; set; }
-        public DbSet<UserRole> AllRoles { get; set; }
-        public DbSet<UserRoles> UserRoles { get; set; }
+        public DbSet<Role> AllRoles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,6 +35,20 @@ namespace Social_network.Server.Data
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId);
 
+            // Configure composite primary key for UserRole
+            modelBuilder.Entity<UserRole>()
+                .HasKey(ur => new { ur.UserId, ur.RoleId });
+
+            // Configure many-to-many relationship between User and Role
+            modelBuilder.Entity<UserRole>()
+                .HasOne(ur => ur.User)
+                .WithMany(u => u.UserRoles) // Changed from u.Roles
+                .HasForeignKey(ur => ur.UserId);
+
+            modelBuilder.Entity<UserRole>()
+                .HasOne(ur => ur.Role)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.RoleId);
 
 
             modelBuilder.Entity<Picture>()
@@ -77,8 +91,8 @@ namespace Social_network.Server.Data
            
      
 
-            modelBuilder.Entity<UserRole>()
-               .HasIndex(r => r.Role)
+            modelBuilder.Entity<Role>()
+               .HasIndex(r => r.Name)
                .IsUnique();
 
 
@@ -101,9 +115,9 @@ namespace Social_network.Server.Data
             var userStateActiveId = new Guid("19e8c336-a7f0-4b63-b31c-8c0feefa0312");
             var userStateInactiveId = new Guid("3d1df7fc-8d73-4ca0-ab38-63d3f0960539");
 
-            modelBuilder.Entity<UserRole>().HasData(
-                new UserRole { Id = userRoleUserId, Role = Role.User },
-                new UserRole { Id = userRoleAdminId, Role = Role.Admin }
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = userRoleUserId, Name = "user" },
+                new Role { Id = userRoleAdminId, Name = "admin"}
             );
 
             modelBuilder.Entity<UserState>().HasData(

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Social_network.Server.Data;
 
@@ -11,9 +12,11 @@ using Social_network.Server.Data;
 namespace Social_network.Server.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250222130416_fix UserRoles")]
+    partial class fixUserRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,13 +137,12 @@ namespace Social_network.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Roles")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("Roles")
                         .IsUnique();
 
                     b.ToTable("AllRoles");
@@ -149,12 +151,12 @@ namespace Social_network.Server.Migrations
                         new
                         {
                             Id = new Guid("1f18d0df-eaaa-412b-b4fa-62f935cef147"),
-                            Name = "user"
+                            Roles = 0
                         },
                         new
                         {
                             Id = new Guid("70939c48-5ded-40e7-8646-a6ce6c989c3c"),
-                            Name = "admin"
+                            Roles = 1
                         });
                 });
 

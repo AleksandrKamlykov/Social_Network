@@ -26,14 +26,14 @@ namespace Social_network.Server.Repository
         public async Task<User> CreateUser(RegisterUserDTO model)
         {
 
-            var role = _context.AllRoles.FirstOrDefault(r => r.Role == Role.User);
+            var role = _context.AllRoles.FirstOrDefault(r => r.Name == "user");
             var state = _context.UserStates.FirstOrDefault(s => s.State == State.Active);
 
             var user = new User();
             user.Name = model.Name;
             user.Email = model.Email;
             user.Nickname = model.Nickname;
-            user.Roles = new List<UserRole>() { role };
+            user.UserRoles = new List<UserRole>() { new UserRole() { UserId = user.Id, RoleId = role.Id } };
             user.State = state;
 
 
@@ -59,19 +59,22 @@ namespace Social_network.Server.Repository
 
         public async Task<IEnumerable<User>> FindUsersByName(string name)
         {
-            return await _context.Users.Where(u => u.Name.Contains(name)).ToListAsync();
+            return await _context.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .Include(u => u.State).Where(u => u.Name.Contains(name)).ToListAsync();
         }
 
         public async Task<User?> GetUserByEmail(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return await _context.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .Include(u => u.State).FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<User?> GetUserById(Guid userId)
         {
 
             var user = await _context.Users
-                .Include(u => u.Roles)
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
                 .Include(u => u.State)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
@@ -79,12 +82,19 @@ namespace Social_network.Server.Repository
 
         public async Task<User> GetUserByUsername(string username)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Nickname == username);
+            return await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Include(u => u.State)
+                .FirstOrDefaultAsync(u => u.Nickname == username);
         }
         public async Task<IEnumerable<User>> GetUsers()
         {
-            return await _context.Users.Include(u => u.Roles)
-                .Include(u => u.State).ToListAsync();
+            return await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Include(u => u.State)
+                .ToListAsync();
         }
 
         public async Task<User> UpdateUser(User user)
@@ -122,34 +132,44 @@ namespace Social_network.Server.Repository
 
         public async Task<IEnumerable<User>> FindUsersByNameOrNickname(string text)
         {
-            var users = await _context.Users.Include(u => u.Roles)
-                .Include(u => u.State).Where(u => u.Name.Contains(text) || u.Nickname.Contains(text)).ToListAsync();
+            var users = await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Include(u => u.State)
+                .Where(u => u.Name.Contains(text) || u.Nickname.Contains(text))
+                .ToListAsync();
             return users;
         }
 
         public async Task<IEnumerable<User>> GetUsersByIds(IEnumerable<Guid> ids)
         {
-            var users = await _context.Users.Include(u => u.Roles).Include(u => u.State).Where(u => ids.Contains(u.Id)).ToListAsync();
+            var users = await _context.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).Include(u => u.State).Where(u => ids.Contains(u.Id)).ToListAsync();
             return users;
+        }
+        public async Task<User> GetUserByNickname(string nickname)
+        {
+            return await _context.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .Include(u => u.State).FirstOrDefaultAsync(u => u.Nickname == nickname);
         }
         public Task<bool> AddManyUsers(IEnumerable<RegisterUserDTO> usersDto)
         {
             var state = _context.UserStates.FirstOrDefault(s => s.State == State.Active);
-            var role = _context.AllRoles.FirstOrDefault(r => r.Role == Role.User);
+            var role = _context.AllRoles.FirstOrDefault(r => r.Name == "user");
 
 
 
-            var users = usersDto.Select((Func<RegisterUserDTO, User>)(u => new User()
-           {
-               Name = u.Name,
-               Email = u.Email,
-               Nickname = u.Nickname,
-               Password = _passwordHasherService.HashPassword(new User(), u.Password),
-               Roles = new List<UserRole>() { role },
-               StateId = state.Id,
-               CreatedAt = DateTime.Now,
-               
-           }));
+            var users = usersDto.Select((Func<RegisterUserDTO, User>)(u =>
+            {
+                var user = new User();
+                user.Name = u.Name;
+                user.Email = u.Email;
+                user.Nickname = u.Nickname;
+                user.UserRoles = new List<UserRole>() { new UserRole() { UserId = user.Id, RoleId = role.Id } };
+                user.State = state;
+                user.Password = _passwordHasherService.HashPassword(user, u.Password);
+                user.CreatedAt = DateTime.Now;
+                return user;
+            }));
             _context.Users.AddRange(users);
             _context.SaveChanges();
 

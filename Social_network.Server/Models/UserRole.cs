@@ -1,18 +1,14 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-
+using Social_network.Server.Models;
 namespace Social_network.Server.Models
 {
-    public enum Role
-    {
-        [Description("user")]
-        User,
-        [Description("admin")]
-        Admin
-    }
     public class UserRole
     {
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
+        public User User { get; set; }
+
+        public Guid RoleId { get; set; }
         public Role Role { get; set; }
     }
 }

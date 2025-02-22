@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 public class UserDto
 {
     public Guid Id { get; set; }
-    public List<Role> Roles { get; set; }
+    public List<string> Roles { get; set; }
     public State State { get; set; }
     public string Name { get; set; }
     public string Nickname { get; set; }

@@ -18,7 +18,7 @@ namespace Social_network.Server.Models
         public string Nickname { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public IEnumerable<UserRole> Roles { get; set; } 
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>(); // Changed
         public Picture? Avatar { get; set; }
         public string? Bio { get; set; }
         public IEnumerable<Picture>? Pictures { get; set; }

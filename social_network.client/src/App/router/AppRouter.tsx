@@ -82,6 +82,7 @@ export const AppRouter = () => {
         }
     ];
 
+
     const browserRouter = useMemo(() => createBrowserRouter(baseRoutes), [isAuthed]);
 
     return <RouterProvider router={browserRouter} />;

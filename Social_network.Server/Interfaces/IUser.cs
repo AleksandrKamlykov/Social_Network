@@ -11,6 +11,7 @@ namespace Social_network.Server.Interfaces
         public Task<User?> GetUserByToken(string token);
         public Task<IEnumerable<User>> GetUsers();
         public Task<User> FindUsersByName(string name);
+        public Task<User> GetUserByNickname(string nickname);
         public Task<IEnumerable<User>> FindUsersByNameOrNickname(string text);
         public Task<User> CreateUser(RegisterUserDTO user);
         public Task<User> UpdateUser(User user);

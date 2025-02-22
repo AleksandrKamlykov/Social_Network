@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Social_network.Server.Data;
 
@@ -11,9 +12,11 @@ using Social_network.Server.Data;
 namespace Social_network.Server.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250222122824_fix UserRole")]
+    partial class fixUserRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,36 +131,6 @@ namespace Social_network.Server.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("Social_network.Server.Models.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("AllRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("1f18d0df-eaaa-412b-b4fa-62f935cef147"),
-                            Name = "user"
-                        },
-                        new
-                        {
-                            Id = new Guid("70939c48-5ded-40e7-8646-a6ce6c989c3c"),
-                            Name = "admin"
-                        });
-                });
-
             modelBuilder.Entity("Social_network.Server.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -215,15 +188,51 @@ namespace Social_network.Server.Migrations
 
             modelBuilder.Entity("Social_network.Server.Models.UserRole", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Role")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AllRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("1f18d0df-eaaa-412b-b4fa-62f935cef147"),
+                            Role = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("70939c48-5ded-40e7-8646-a6ce6c989c3c"),
+                            Role = 1
+                        });
+                });
+
+            modelBuilder.Entity("Social_network.Server.Models.UserRoles", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("UserId", "RoleId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("RoleId");
+                    b.HasKey("Id");
 
                     b.ToTable("UserRoles");
                 });
@@ -331,31 +340,14 @@ namespace Social_network.Server.Migrations
 
             modelBuilder.Entity("Social_network.Server.Models.UserRole", b =>
                 {
-                    b.HasOne("Social_network.Server.Models.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Social_network.Server.Models.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
+                    b.HasOne("Social_network.Server.Models.User", null)
+                        .WithMany("Roles")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Social_network.Server.Models.Post", b =>
                 {
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("Social_network.Server.Models.Role", b =>
-                {
-                    b.Navigation("UserRoles");
                 });
 
             modelBuilder.Entity("Social_network.Server.Models.User", b =>
@@ -370,7 +362,7 @@ namespace Social_network.Server.Migrations
 
                     b.Navigation("Posts");
 
-                    b.Navigation("UserRoles");
+                    b.Navigation("Roles");
                 });
 #pragma warning restore 612, 618
         }

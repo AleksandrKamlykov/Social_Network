@@ -3,11 +3,11 @@ using System.Text.Json.Serialization;
 using Social_network.Server.Models;
 using System.Collections.Generic;
 
-public class RoleListConverter : JsonConverter<List<UserRole>>
+public class RoleListConverter : JsonConverter<List<Role>>
 {
-    public override List<UserRole> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override List<Role> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var roles = new List<UserRole>();
+        var roles = new List<Role>();
         while (reader.Read())
         {
             if (reader.TokenType == JsonTokenType.EndArray)
@@ -15,14 +15,14 @@ public class RoleListConverter : JsonConverter<List<UserRole>>
 
             if (reader.TokenType == JsonTokenType.String)
             {
-                var role = (UserRole)Enum.Parse(typeof(UserRole), reader.GetString());
+                var role = (Role)Enum.Parse(typeof(Role), reader.GetString());
                 roles.Add(role);
             }
         }
         return roles;
     }
 
-    public override void Write(Utf8JsonWriter writer, List<UserRole> value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, List<Role> value, JsonSerializerOptions options)
     {
         writer.WriteStartArray();
         foreach (var role in value)

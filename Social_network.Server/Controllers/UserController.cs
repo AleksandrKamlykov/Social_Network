@@ -84,7 +84,7 @@ namespace Social_network.Server.Controllers
             var token = Request.Cookies["AuthToken"];
             if (string.IsNullOrEmpty(token))
             {
-                return NotFound("User not authenticated");
+                return Unauthorized("User not authenticated");
             }
 
             var user = _tokenService.GetUserFromToken(token);
@@ -132,7 +132,16 @@ namespace Social_network.Server.Controllers
             var filteredUsersDto = filteredUsers.Select(u => u.ToDto()).Where(u => u.Id != user.Id);
             return Ok(filteredUsersDto);
         }
-
+        [HttpGet("getByNickname/{nickname}")]
+        public async Task<IActionResult> GetUserByNickname(string nickname)
+        {
+            var user = await _userRepository.GetUserByNickname(nickname);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user.ToDto());
+        }
         [HttpPost("load-many-users")]
         public async Task<IActionResult> LoadManyUsers([FromBody] IEnumerable<RegisterUserDTO> userDTOs)
         {
