@@ -15,9 +15,9 @@ namespace Social_network.Server.Controllers
     {
 
         private readonly IFollowers _follower;
-        private readonly IUser _userRepository;
+        private readonly IUserRepository _userRepository;
 
-        public FollowersController(IFollowers follower, IUser userRepository)
+        public FollowersController(IFollowers follower, IUserRepository userRepository)
         {
             _follower = follower;
             _userRepository = userRepository;

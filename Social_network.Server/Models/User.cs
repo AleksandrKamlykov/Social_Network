@@ -30,5 +30,8 @@ namespace Social_network.Server.Models
         public DateTime CreatedAt { get; set; }
         [JsonIgnore]
         public IEnumerable<User> Followers { get; set; }
+        [JsonIgnore]
+        public List<Attachment> Attachments { get; set; } // Added this line
+
     }
 }

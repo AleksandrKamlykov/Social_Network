@@ -13,9 +13,9 @@ namespace Social_network.Server.Controllers
     public class PostsController : ControllerBase
     {
         private readonly IPost _postRepository;
-        private readonly IUser _userRepository;
+        private readonly IUserRepository _userRepository;
 
-        public PostsController(IPost postRepository, IUser userRepository )
+        public PostsController(IPost postRepository, IUserRepository userRepository )
         {
             _postRepository = postRepository;
             _userRepository = userRepository;

@@ -1,8 +1,10 @@
 import React from 'react';
-import { Layout, Card, Avatar, Row, Col } from 'antd';
+import { Layout, Card, Avatar, Row, Col, Tabs } from 'antd';
 import { Posts } from '@/Widgets/posts/ui/posts';
 import { Followers } from '@/Widgets/followers/ui/followers';
 import { ProfileProvider, useProfile } from '../../../context/profileContext/profileContext';
+import { Gallery } from '@/Widgets/attacments/images';
+import { AudioAttacments } from '@/Widgets/attacments/audio';
 
 const { Content } = Layout;
 
@@ -34,21 +36,19 @@ const ProfileContent: React.FC = () => {
                     </Row>
                 </Col>
                 <Col span={16}>
-                    <Card title="Gallery" style={{ marginBottom: '16px' }}>
-                        <Row gutter={[16, 16]}>
-                            <Col span={8}>
-                                <img src="https://picsum.photos/200/300" alt="Gallery Item" />
-                            </Col>
-                            <Col span={8}>
-                                <img src="https://picsum.photos/200/300" alt="Gallery Item" />
-                            </Col>
-                            <Col span={8}>
-                                <img src="https://picsum.photos/200/300" alt="Gallery Item" />
-                            </Col>
-                        </Row>
-                    </Card>
-                    <Card title="Posts">
-                        <Posts userId={id} />
+                    <Card>
+                        <Tabs defaultActiveKey="1" centered type="line" size="large">
+                            <Tabs.TabPane tab="Posts" key="1">
+                                <Posts userId={id} />
+                            </Tabs.TabPane>
+                            <Tabs.TabPane tab="Pictures" key="2">
+                                <Gallery userId={id} />
+                            </Tabs.TabPane>
+                            <Tabs.TabPane tab="Audio" key="3">
+                                <AudioAttacments userId={id} />
+                            </Tabs.TabPane>
+
+                        </Tabs>
                     </Card>
                 </Col>
             </Row>

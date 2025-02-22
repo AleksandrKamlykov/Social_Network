@@ -3,7 +3,7 @@ using Social_network.Server.DTOs;
 
 namespace Social_network.Server.Interfaces
 {
-    public interface IUser
+    public interface IUserRepository
     {
         public Task<User> GetUserById(Guid id);
         public Task<User> GetUserByEmail(string email);

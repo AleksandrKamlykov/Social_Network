@@ -9,7 +9,7 @@ using System.Collections.Generic; // Updated namespace for ApplicationDBContext
 
 namespace Social_network.Server.Repository
 {
-    public class UserRepository : IUser
+    public class UserRepository : IUserRepository
     {
         private readonly ApplicationDBContext _context;
         private readonly PasswordHasherService _passwordHasherService;
@@ -104,7 +104,7 @@ namespace Social_network.Server.Repository
             return user;
         }
 
-        Task<User> IUser.FindUsersByName(string name)
+        Task<User> IUserRepository.FindUsersByName(string name)
         {
             throw new NotImplementedException();
         }

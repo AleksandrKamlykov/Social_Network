@@ -16,8 +16,8 @@ namespace Social_network.Server.Controllers
     {
         private readonly TokenService _tokenService;
         private readonly PasswordHasherService _passwordHasherService;
-        private readonly IUser _userRepository;
-        public UserController(TokenService tokenService, PasswordHasherService passwordHasherService, IUser userRepository)
+        private readonly IUserRepository _userRepository;
+        public UserController(TokenService tokenService, PasswordHasherService passwordHasherService, IUserRepository userRepository)
         {
             _tokenService = tokenService;
             _passwordHasherService = passwordHasherService;

@@ -9,8 +9,8 @@ namespace Social_network.Server.Repository
     public class PostRepository : IPost
     {
         private readonly ApplicationDBContext _context;
-        private readonly IUser _userRepository;
-        public PostRepository(ApplicationDBContext context, IUser userRepository)
+        private readonly IUserRepository _userRepository;
+        public PostRepository(ApplicationDBContext context, IUserRepository userRepository)
         {
             _context = context;
             _userRepository = userRepository;

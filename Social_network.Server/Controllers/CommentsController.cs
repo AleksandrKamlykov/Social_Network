@@ -11,10 +11,10 @@ namespace Social_network.Server.Controllers
     {
 
         private readonly IComment _comment;
-        private readonly IUser _userRepository;
+        private readonly IUserRepository _userRepository;
 
 
-        public CommentsController(IComment comment, IUser userRepo)
+        public CommentsController(IComment comment, IUserRepository userRepo)
         {
             _comment = comment;
             _userRepository = userRepo;
