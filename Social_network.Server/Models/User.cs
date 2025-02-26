@@ -19,9 +19,8 @@ namespace Social_network.Server.Models
         public string Email { get; set; }
         public string Password { get; set; }
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>(); // Changed
-        public Picture? Avatar { get; set; }
+        public Avatar? Avatar { get; set; }
         public string? Bio { get; set; }
-        public IEnumerable<Picture>? Pictures { get; set; }
         public IEnumerable<Post>? Posts { get; set; }
         public IEnumerable<Comment>? Comments { get; set; }
 
@@ -30,8 +29,7 @@ namespace Social_network.Server.Models
         public DateTime CreatedAt { get; set; }
         [JsonIgnore]
         public IEnumerable<User> Followers { get; set; }
-        [JsonIgnore]
-        public List<Attachment> Attachments { get; set; } // Added this line
-
+        public IEnumerable<Picture> Pictures { get; set; }
+        public IEnumerable<Audio> Audios { get; set; }
     }
 }

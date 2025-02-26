@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Social_network.Server.Interfaces;
 using Social_network.Server.Models;
 using Social_network.Server.Repository;
-using Social_network.Server.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -19,7 +19,6 @@ namespace Social_network.Server.Controllers
         {
             _attachmentRepository = attachmentRepository;
             _userRepository = userRepository;
-
         }
 
         [HttpGet]
@@ -40,17 +39,10 @@ namespace Social_network.Server.Controllers
             return Ok(attachment);
         }
 
-        [HttpPost]
+        [HttpPost("upload")]
         public async Task<ActionResult> Create(Attachment attachment)
         {
-            var token = Request.Cookies["AuthToken"];
-            var user = await _userRepository.GetUserByToken(token);
-
-            if (user == null) {
-                return Unauthorized();
-            }
-
-            await _attachmentRepository.AddAsync(attachment, user);
+            await _attachmentRepository.AddAsync(attachment);
             return CreatedAtAction(nameof(GetById), new { id = attachment.Id }, attachment);
         }
 
@@ -71,6 +63,36 @@ namespace Social_network.Server.Controllers
         {
             await _attachmentRepository.DeleteAsync(id);
             return NoContent();
+        }
+
+        [HttpPost("addPicture")]
+        public async Task<ActionResult> AddPicture([FromBody]Attachment picture)
+        {
+
+            var token = Request.Cookies["AuthToken"];
+            var user = await _userRepository.GetUserByToken(token);
+
+            await _attachmentRepository.AddPictureAsync(picture, user);
+            return CreatedAtAction(nameof(GetById), new { id = picture.Id }, picture);
+        }
+        [HttpGet("pictures/{userId}")]
+        public async Task<ActionResult<IEnumerable<Attachment>>> GetPictures(Guid userId)
+        {
+            var pictures = await _attachmentRepository.GetPicturesByUser(userId);
+            return Ok(pictures);
+        }
+        [HttpPost("addAudio")]
+        public async Task<ActionResult> AddAudio(Attachment audio)
+        {
+            await _attachmentRepository.AddAudioAsync(audio);
+            return CreatedAtAction(nameof(GetById), new { id = audio.Id }, audio);
+        }
+
+        [HttpPost("addAvatar")]
+        public async Task<ActionResult> AddAvatar(Attachment avatar)
+        {
+            await _attachmentRepository.AddAvatarAsync(avatar);
+            return CreatedAtAction(nameof(GetById), new { id = avatar.Id }, avatar);
         }
     }
 }

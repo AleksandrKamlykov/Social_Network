@@ -17,6 +17,9 @@ namespace Social_network.Server.Data
         public DbSet<Followers> Followers { get; set; }
         public DbSet<Role> AllRoles { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
+        public DbSet<Avatar> Avatars { get; set; }
+        public DbSet<Audio> Audios { get; set; }
+        public DbSet<Attachment> Attachments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,6 +58,19 @@ namespace Social_network.Server.Data
                 .HasOne(p => p.User)
                 .WithMany(u => u.Pictures)
                 .HasForeignKey(p => p.UserId);
+
+            // Configure relationships for Avatar
+            modelBuilder.Entity<Avatar>()
+                .HasOne(a => a.User)
+                .WithOne(u => u.Avatar)
+                .HasForeignKey<Avatar>(a => a.UserId);
+
+            // Configure relationships for Audio
+            modelBuilder.Entity<Audio>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.Audios)
+                .HasForeignKey(a => a.UserId);
+
 
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.User)

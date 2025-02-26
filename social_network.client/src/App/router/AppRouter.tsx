@@ -49,6 +49,10 @@ const routes: RouteObject[] = [
 
 const notAuthedRoutes: RouteObject[] = [
     {
+        path: "/",
+        element: <Navigate to={pathes.auth.relative} />
+    },
+    {
         path: pathes.registration.relative,
         id: pathes.registration.id,
         element: <RegistrationPage />

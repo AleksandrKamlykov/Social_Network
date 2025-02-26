@@ -10,11 +10,14 @@ const { Content } = Layout;
 
 const ProfileContent: React.FC = () => {
     const { profile, loading } = useProfile();
+    const [currentTab, setCurrentTab] = React.useState('posts');
+
 
     if (loading) return <p>Loading...</p>;
     if (!profile) return <p>User not found</p>;
 
     const { id, name, email, birthDate, nickname } = profile;
+
 
     return (
         <Content style={{ padding: '20px' }}>
@@ -37,14 +40,14 @@ const ProfileContent: React.FC = () => {
                 </Col>
                 <Col span={16}>
                     <Card>
-                        <Tabs defaultActiveKey="1" centered type="line" size="large">
-                            <Tabs.TabPane tab="Posts" key="1">
+                        <Tabs activeKey={currentTab} onChange={setCurrentTab} centered type="line" size="large">
+                            <Tabs.TabPane tab="Posts" key="posts">
                                 <Posts userId={id} />
                             </Tabs.TabPane>
-                            <Tabs.TabPane tab="Pictures" key="2">
-                                <Gallery userId={id} />
+                            <Tabs.TabPane tab="Pictures" key="pictures">
+                                <Gallery userId={id} isOpen={currentTab=== "pictures"} />
                             </Tabs.TabPane>
-                            <Tabs.TabPane tab="Audio" key="3">
+                            <Tabs.TabPane tab="Audio" key="audios">
                                 <AudioAttacments userId={id} />
                             </Tabs.TabPane>
 

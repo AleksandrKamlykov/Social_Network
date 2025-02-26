@@ -1,4 +1,7 @@
 ﻿using Social_network.Server.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Social_network.Server.Interfaces
 {
@@ -6,8 +9,12 @@ namespace Social_network.Server.Interfaces
     {
         Task<IEnumerable<Attachment>> GetAllAsync();
         Task<Attachment> GetByIdAsync(Guid id);
-        Task AddAsync(Attachment attachment, User user);
+        Task<Attachment> AddAsync(Attachment attachment);
         Task UpdateAsync(Attachment attachment);
         Task DeleteAsync(Guid id);
+        Task AddPictureAsync(Attachment picture, User user);
+        Task<IEnumerable<Attachment>> GetPicturesByUser(Guid userId);
+        Task AddAudioAsync(Attachment audio);
+        Task AddAvatarAsync(Attachment avatar);
     }
 }

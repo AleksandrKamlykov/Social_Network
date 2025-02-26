@@ -1,6 +1,6 @@
 import { useRequestData } from '@/Shared/api/useRequestData';
 import React, { useEffect } from 'react';
-import { IAttacment } from './types';
+import { IAttachment } from './types';
 import { Col, Row, Spin } from 'antd';
 
 interface AudioProps {
@@ -9,7 +9,7 @@ interface AudioProps {
 
 export const AudioAttacments: React.FC<AudioProps> = ({ userId }) => {
 
-    const { data, loading, get } = useRequestData<IAttacment[]>();
+    const { data, loading, get } = useRequestData<IAttachment[]>();
 
     useEffect(() => {
         get(`Attacments/${userId}`);

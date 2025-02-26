@@ -86,6 +86,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPost, PostRepository>();
 builder.Services.AddScoped<IComment, CommentsRepository>();
 builder.Services.AddScoped<IFollowers, FollowersRepository>();
+builder.Services.AddScoped<IAttachmentRepository, AttachmentRepository>();
 
 var app = builder.Build();
 

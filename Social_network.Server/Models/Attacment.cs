@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace Social_network.Server.Models
 {
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum AttachmentType
     {
         [Description("audio")]
