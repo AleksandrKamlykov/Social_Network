@@ -28,7 +28,7 @@ namespace Social_network.Server.Controllers
             return Ok(comments);
         }
         [HttpPost("add")]
-        public async Task<IActionResult> CreateComment(CommentDTO comment)
+        public async Task<IActionResult> CreateComment(CreateCommentDTO comment)
         {
             var token = Request.Cookies["AuthToken"];
             if (string.IsNullOrEmpty(token))

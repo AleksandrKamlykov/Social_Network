@@ -14,11 +14,13 @@ namespace Social_network.Server.Controllers
     {
         private readonly IPost _postRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IFollowers _followersRepository;
 
-        public PostsController(IPost postRepository, IUserRepository userRepository )
+        public PostsController(IPost postRepository, IUserRepository userRepository,IFollowers followers )
         {
             _postRepository = postRepository;
             _userRepository = userRepository;
+            _followersRepository = followers;
         }
 
         // POST: api/Create
@@ -91,6 +93,31 @@ namespace Social_network.Server.Controllers
         {
             var dislikedPost = await _postRepository.DislikePost(id);
             return Ok(dislikedPost.ToDto());
+        }
+        [HttpGet("feed")]
+        public async Task<ActionResult<IEnumerable<PostDto>>> GetFeed()
+        {
+            var token = Request.Cookies["AuthToken"];
+            if (string.IsNullOrEmpty(token))
+            {
+                return NotFound("User not authenticated");
+            }
+            var user = await _userRepository.GetUserByToken(token);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var followers = await _followersRepository.GetFollowers(user.Id);
+
+            if (followers == null)
+            {
+                return NotFound("User has no followers");
+            }
+
+            var posts = await _postRepository.GetPostsByUserIds(followers.Select(f => f.FollowedId));
+            var postDtos = posts.Select(p => p.ToDto());
+            return Ok(postDtos);
         }
     }
 }

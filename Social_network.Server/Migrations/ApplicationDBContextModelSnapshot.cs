@@ -28,12 +28,6 @@ namespace Social_network.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("AudioId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("AvatarId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Base64Data")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -57,10 +51,6 @@ namespace Social_network.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AudioId");
-
-                    b.HasIndex("AvatarId");
-
                     b.ToTable("Attachments");
                 });
 
@@ -70,10 +60,15 @@ namespace Social_network.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("AttachmentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AttachmentId");
 
                     b.HasIndex("UserId");
 
@@ -86,10 +81,15 @@ namespace Social_network.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("AttachmentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AttachmentId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -110,13 +110,13 @@ namespace Social_network.Server.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("PostId")
+                    b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ReplyToComment")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -323,35 +323,40 @@ namespace Social_network.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Social_network.Server.Models.Attachment", b =>
-                {
-                    b.HasOne("Social_network.Server.Models.Audio", null)
-                        .WithMany("Attachments")
-                        .HasForeignKey("AudioId");
-
-                    b.HasOne("Social_network.Server.Models.Avatar", null)
-                        .WithMany("Attachments")
-                        .HasForeignKey("AvatarId");
-                });
-
             modelBuilder.Entity("Social_network.Server.Models.Audio", b =>
                 {
+                    b.HasOne("Social_network.Server.Models.Attachment", "Attachment")
+                        .WithMany()
+                        .HasForeignKey("AttachmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Social_network.Server.Models.User", "User")
                         .WithMany("Audios")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Attachment");
+
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Social_network.Server.Models.Avatar", b =>
                 {
+                    b.HasOne("Social_network.Server.Models.Attachment", "Attachments")
+                        .WithMany()
+                        .HasForeignKey("AttachmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Social_network.Server.Models.User", "User")
                         .WithOne("Avatar")
                         .HasForeignKey("Social_network.Server.Models.Avatar", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Attachments");
 
                     b.Navigation("User");
                 });
@@ -360,11 +365,15 @@ namespace Social_network.Server.Migrations
                 {
                     b.HasOne("Social_network.Server.Models.Post", "Post")
                         .WithMany("Comments")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Social_network.Server.Models.User", "User")
                         .WithMany("Comments")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Post");
 
@@ -414,7 +423,7 @@ namespace Social_network.Server.Migrations
                     b.HasOne("Social_network.Server.Models.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -452,16 +461,6 @@ namespace Social_network.Server.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Social_network.Server.Models.Audio", b =>
-                {
-                    b.Navigation("Attachments");
-                });
-
-            modelBuilder.Entity("Social_network.Server.Models.Avatar", b =>
-                {
-                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("Social_network.Server.Models.Post", b =>

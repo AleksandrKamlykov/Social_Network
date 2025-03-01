@@ -17,7 +17,8 @@ export interface IUser {
   email: string;
   password: string;
   roles: Roles[];
-  avatar?: Picture;
+  avatar?: string;
+  avatarId?: string;
   bio?: string;
   pictures?: Picture[];
 

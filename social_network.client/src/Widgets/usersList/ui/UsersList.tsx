@@ -3,8 +3,11 @@ import { IUser } from "@/Enteties/user/types";
 import { pathRouterBuilder } from "@/Shared/utils/pathRouterBuilder";
 import { Avatar, Button, List, Space, Typography } from "antd";
 import { NavLink } from "react-router-dom";
-import { UserAddOutlined } from "@ant-design/icons";
 import { useRequest } from "@/Shared/api/useRequest";
+import React, {useEffect} from "react";
+import {useUsersContext} from "@/Pages/Users/ui/Users.tsx";
+import { UserAddOutlined, UserDeleteOutlined } from "@ant-design/icons";
+import { Spin } from "antd";
 
 type UsersListProps = {
     users: IUser[];
@@ -22,24 +25,65 @@ export const UsersList: React.FC<UsersListProps> = ({ users, followers }) => {
 };
 
 const UserItem: React.FC<{ user: IUser; followers: string[]; }> = ({ user, followers }) => {
+
+    const {follow, unFollow}= useUsersContext();
+    const [avatarBase64, setAvatarBase64] = React.useState<string | null>(null);
+
+
     const { name, nickname, email } = user;
 
     const { loading, post } = useRequest();
+    const { loading:loadingAvatar, get } = useRequest();
 
-    const follow = async () => {
-        await post(`Followers/follow`, { follow: user.id });
+
+    const fetchAvatar = async () => {
+        const { data, status } = await get(`Attachments/${user.avatarId}`);
+        if (status === 200 && data.base64Data) {
+            setAvatarBase64(data.base64Data);
+        }
+    }
+
+
+    useEffect(() => {
+        if(user?.avatarId){
+            fetchAvatar();
+        }
+    }, [user]);
+
+    const followFetch = async () => {
+       const {data,status}= await post(`Followers/follow`, { follow: user.id });
+        if(status === 200 && data.id){
+            follow(user.id);
+        }
     };
 
-    const unfollow = async () => {
-        await post(`Followers/unfollow`, { follow: user.id });
+    const unfollowFetch = async () => {
+        const {status}=await post(`Followers/unfollow`, { follow: user.id });
+
+        if(status===200 ){
+            unFollow(user.id);
+
+        }
     };
 
     const isFollowed = followers.includes(user.id);
 
+    const sharedBtnProps = {
+        loading,
+        onClick: isFollowed ? unfollowFetch : followFetch,
+        icon: isFollowed ? <UserDeleteOutlined/> : <UserAddOutlined/>,
+        type: "primary",
+        danger: isFollowed,
+        children: isFollowed ? "Unfollow" : "Follow",
+        style:{
+            width: 110
+        }
+    }
+
     return (
         <List.Item>
             <List.Item.Meta
-                avatar={<Avatar src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${nickname}`} />}
+                avatar={loadingAvatar ? <Spin/> : <Avatar  src={ avatarBase64 ??`https://api.dicebear.com/7.x/miniavs/svg?seed=${nickname}`} />}
                 title={<NavLink to={pathRouterBuilder(pathes.profile.absolute, { nickname })}>{name}</NavLink>}
                 description={
                     <Space>
@@ -49,8 +93,8 @@ const UserItem: React.FC<{ user: IUser; followers: string[]; }> = ({ user, follo
                 }
             />
             {isFollowed ?
-                <Button type="primary" loading={loading} onClick={unfollow}>Unfollow</Button>
-                : <Button type="primary" loading={loading} onClick={follow}>Follow</Button>}
+                <Button {...sharedBtnProps}/>
+                : <Button {...sharedBtnProps}/>}
         </List.Item>
     );
 };

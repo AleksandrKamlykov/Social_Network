@@ -12,8 +12,8 @@ using Social_network.Server.Data;
 namespace Social_network.Server.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20250218213542_replace roles & state3")]
-    partial class replacerolesstate3
+    [Migration("20250301152313_add audios")]
+    partial class addaudios
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,81 @@ namespace Social_network.Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Social_network.Server.Models.Attachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Base64Data")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Attachments");
+                });
+
+            modelBuilder.Entity("Social_network.Server.Models.Audio", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AttachmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttachmentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Audios");
+                });
+
+            modelBuilder.Entity("Social_network.Server.Models.Avatar", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AttachmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AttachmentId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Avatars");
+                });
 
             modelBuilder.Entity("Social_network.Server.Models.Comment", b =>
                 {
@@ -38,13 +113,13 @@ namespace Social_network.Server.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid?>("PostId")
+                    b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("ReplyToComment")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -84,23 +159,17 @@ namespace Social_network.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("AttachmentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UserId1")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("base64")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AttachmentId");
 
-                    b.HasIndex("UserId1")
-                        .IsUnique()
-                        .HasFilter("[UserId1] IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Pictures");
                 });
@@ -129,6 +198,36 @@ namespace Social_network.Server.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("Social_network.Server.Models.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("AllRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("1f18d0df-eaaa-412b-b4fa-62f935cef147"),
+                            Name = "user"
+                        },
+                        new
+                        {
+                            Id = new Guid("70939c48-5ded-40e7-8646-a6ce6c989c3c"),
+                            Name = "admin"
+                        });
                 });
 
             modelBuilder.Entity("Social_network.Server.Models.User", b =>
@@ -188,36 +287,17 @@ namespace Social_network.Server.Migrations
 
             modelBuilder.Entity("Social_network.Server.Models.UserRole", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("UserId")
+                    b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("Role")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
+                    b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("1f18d0df-eaaa-412b-b4fa-62f935cef147"),
-                            Role = 0
-                        },
-                        new
-                        {
-                            Id = new Guid("70939c48-5ded-40e7-8646-a6ce6c989c3c"),
-                            Role = 1
-                        });
                 });
 
             modelBuilder.Entity("Social_network.Server.Models.UserState", b =>
@@ -246,15 +326,57 @@ namespace Social_network.Server.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Social_network.Server.Models.Audio", b =>
+                {
+                    b.HasOne("Social_network.Server.Models.Attachment", "Attachment")
+                        .WithMany()
+                        .HasForeignKey("AttachmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Social_network.Server.Models.User", "User")
+                        .WithMany("Audios")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attachment");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Social_network.Server.Models.Avatar", b =>
+                {
+                    b.HasOne("Social_network.Server.Models.Attachment", "Attachments")
+                        .WithMany()
+                        .HasForeignKey("AttachmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Social_network.Server.Models.User", "User")
+                        .WithOne("Avatar")
+                        .HasForeignKey("Social_network.Server.Models.Avatar", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Attachments");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Social_network.Server.Models.Comment", b =>
                 {
                     b.HasOne("Social_network.Server.Models.Post", "Post")
                         .WithMany("Comments")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Social_network.Server.Models.User", "User")
                         .WithMany("Comments")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("Post");
 
@@ -282,15 +404,19 @@ namespace Social_network.Server.Migrations
 
             modelBuilder.Entity("Social_network.Server.Models.Picture", b =>
                 {
+                    b.HasOne("Social_network.Server.Models.Attachment", "Attachment")
+                        .WithMany()
+                        .HasForeignKey("AttachmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Social_network.Server.Models.User", "User")
                         .WithMany("Pictures")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Social_network.Server.Models.User", null)
-                        .WithOne("Avatar")
-                        .HasForeignKey("Social_network.Server.Models.Picture", "UserId1");
+                    b.Navigation("Attachment");
 
                     b.Navigation("User");
                 });
@@ -300,7 +426,7 @@ namespace Social_network.Server.Migrations
                     b.HasOne("Social_network.Server.Models.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -323,9 +449,21 @@ namespace Social_network.Server.Migrations
 
             modelBuilder.Entity("Social_network.Server.Models.UserRole", b =>
                 {
-                    b.HasOne("Social_network.Server.Models.User", null)
-                        .WithMany("Roles")
-                        .HasForeignKey("UserId");
+                    b.HasOne("Social_network.Server.Models.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Social_network.Server.Models.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Social_network.Server.Models.Post", b =>
@@ -333,8 +471,15 @@ namespace Social_network.Server.Migrations
                     b.Navigation("Comments");
                 });
 
+            modelBuilder.Entity("Social_network.Server.Models.Role", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
             modelBuilder.Entity("Social_network.Server.Models.User", b =>
                 {
+                    b.Navigation("Audios");
+
                     b.Navigation("Avatar");
 
                     b.Navigation("Comments");
@@ -345,7 +490,7 @@ namespace Social_network.Server.Migrations
 
                     b.Navigation("Posts");
 
-                    b.Navigation("Roles");
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

@@ -81,18 +81,32 @@ namespace Social_network.Server.Controllers
             var pictures = await _attachmentRepository.GetPicturesByUser(userId);
             return Ok(pictures);
         }
-        [HttpPost("addAudio")]
-        public async Task<ActionResult> AddAudio(Attachment audio)
+        [HttpPost("audio")]
+        public async Task<ActionResult> AddAudio([FromBody]Attachment audio)
         {
-            await _attachmentRepository.AddAudioAsync(audio);
+            var token = Request.Cookies["AuthToken"];
+            var user = await _userRepository.GetUserByToken(token);
+
+            await _attachmentRepository.AddAudioAsync(audio, user);
             return CreatedAtAction(nameof(GetById), new { id = audio.Id }, audio);
         }
-
-        [HttpPost("addAvatar")]
-        public async Task<ActionResult> AddAvatar(Attachment avatar)
+        [HttpGet("audios/{userId}")]
+        public async Task<ActionResult<IEnumerable<Attachment>>> GetAudios(Guid userId)
         {
-            await _attachmentRepository.AddAvatarAsync(avatar);
-            return CreatedAtAction(nameof(GetById), new { id = avatar.Id }, avatar);
+            var pictures = await _attachmentRepository.GetAudiosByUser(userId);
+            return Ok(pictures);
+        }
+
+
+        [HttpPost("avatar")]
+        public async Task<ActionResult<IEnumerable<Attachment>>> SetAvatar([FromBody] Attachment avatar)
+        {
+            var token = Request.Cookies["AuthToken"];
+            var user = await _userRepository.GetUserByToken(token);
+
+
+            _attachmentRepository.AddAvatarAsync(avatar, user);
+            return Ok();
         }
     }
 }

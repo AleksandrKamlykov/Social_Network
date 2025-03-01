@@ -5,4 +5,6 @@ export interface Comment {
     userId?: string;
     postId?: string;
     replyToComment?: string;
+    userName: string;
+    userAvatar?: string;
 }

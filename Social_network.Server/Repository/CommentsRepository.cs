@@ -17,7 +17,7 @@ namespace Social_network.Server.Repository
             _context = context;
         }
 
-        public async Task<Comment> CreateComment(CommentDTO comment)
+        public async Task<Comment> CreateComment(CreateCommentDTO comment)
         {
             var newComment = new Comment
             {
@@ -36,7 +36,12 @@ namespace Social_network.Server.Repository
 
         public async Task<IEnumerable<CommentDTO>> GetCommentsByPostId(Guid postId)
         {
-            var comments = await _context.Comments.Where(c => c.PostId == postId).ToListAsync();
+            var comments = await _context.Comments
+                .Include(c => c.User)
+                .ThenInclude(u => u.Avatar)
+                .ThenInclude(a => a.Attachments)
+                .Where(c => c.PostId == postId)
+                .ToListAsync();
             List<CommentDTO> commentsDTO = new List<CommentDTO>();
             foreach (var comment in comments)
             {

@@ -14,7 +14,8 @@ namespace Social_network.Server.Interfaces
         Task DeleteAsync(Guid id);
         Task AddPictureAsync(Attachment picture, User user);
         Task<IEnumerable<Attachment>> GetPicturesByUser(Guid userId);
-        Task AddAudioAsync(Attachment audio);
-        Task AddAvatarAsync(Attachment avatar);
+        Task<IEnumerable<Attachment>> GetAudiosByUser(Guid userId);
+        Task AddAudioAsync(Attachment audio, User user);
+        Task AddAvatarAsync(Attachment avatar, User user);
     }
 }

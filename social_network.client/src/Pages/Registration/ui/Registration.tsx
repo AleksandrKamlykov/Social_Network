@@ -3,7 +3,7 @@ import { Form, Input, Button, DatePicker } from 'antd';
 import { FormInstance } from 'antd';
 import { IUser } from '@/Enteties/user/types';
 import { useRequest } from '@/Shared/api/useRequest';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import { pathes } from '@/App/router/pathes';
 import dayjs from 'dayjs';
 
@@ -12,11 +12,18 @@ export const Registration: React.FC = () => {
     const [form] = Form.useForm();
 
     const {post,loading} = useRequest()
+    const navigate = useNavigate();
 
     const onFinish = async (values: IUser) => {
-        console.log('Received values from form: ', values);
+
         values.birthDate = dayjs(values.birthDate).format('YYYY-MM-DD')
-        await post('User/register', values)
+
+       const {status}= await post('User/register', values)
+
+         if(status === 200){
+              form.resetFields();
+                navigate(pathes.auth.absolute)
+            }
     };
 
     return (

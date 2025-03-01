@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Social_network.Server.Models
 {
@@ -7,7 +8,9 @@ namespace Social_network.Server.Models
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
+        [JsonIgnore]
         public User User { get; set; }
-        public List<Attachment> Attachments { get; set; } = new List<Attachment>();
+        public Guid AttachmentId { get; set; }
+        public Attachment Attachment { get; set; }
     }
 }

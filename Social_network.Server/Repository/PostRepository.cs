@@ -77,5 +77,15 @@ namespace Social_network.Server.Repository
             await _context.SaveChangesAsync();
             return post;
         }
+
+        public async Task<IEnumerable<Post>> GetPostsByUserIds(IEnumerable<Guid> ids)
+        {
+            return await _context.Posts
+                .Include(p=> p.User)
+                .ThenInclude(u => u.Avatar)
+                .Where(p => ids.Contains(p.UserId))
+                .OrderByDescending(p => p.Date)
+                .ToListAsync();
+        }
     }
 }

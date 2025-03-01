@@ -9,7 +9,7 @@ namespace Social_network.Server.Interfaces
 {
     public interface IComment
     {
-        public Task<Comment> CreateComment(CommentDTO comment);
+        public Task<Comment> CreateComment(CreateCommentDTO comment);
         public Task<IEnumerable<CommentDTO>> GetCommentsByPostId(Guid postId);
     }
 }

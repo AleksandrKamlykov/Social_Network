@@ -38,14 +38,12 @@ namespace Social_network.Server.Data
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId);
 
-            // Configure composite primary key for UserRole
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
 
-            // Configure many-to-many relationship between User and Role
             modelBuilder.Entity<UserRole>()
                 .HasOne(ur => ur.User)
-                .WithMany(u => u.UserRoles) // Changed from u.Roles
+                .WithMany(u => u.UserRoles)
                 .HasForeignKey(ur => ur.UserId);
 
             modelBuilder.Entity<UserRole>()
@@ -53,40 +51,37 @@ namespace Social_network.Server.Data
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(ur => ur.RoleId);
 
-
             modelBuilder.Entity<Picture>()
                 .HasOne(p => p.User)
                 .WithMany(u => u.Pictures)
                 .HasForeignKey(p => p.UserId);
 
-            // Configure relationships for Avatar
             modelBuilder.Entity<Avatar>()
                 .HasOne(a => a.User)
                 .WithOne(u => u.Avatar)
                 .HasForeignKey<Avatar>(a => a.UserId);
 
-            // Configure relationships for Audio
             modelBuilder.Entity<Audio>()
                 .HasOne(a => a.User)
                 .WithMany(u => u.Audios)
                 .HasForeignKey(a => a.UserId);
 
-
             modelBuilder.Entity<Post>()
                 .HasOne(p => p.User)
                 .WithMany(u => u.Posts)
-                .HasForeignKey(p => p.UserId);
-
-            modelBuilder.Entity<Comment>()
-                .HasOne(c => c.User)
-                .WithMany(u => u.Comments)
-                .HasForeignKey(c => c.UserId);
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Comment>()
                 .HasOne(c => c.Post)
                 .WithMany(p => p.Comments)
                 .HasForeignKey(c => c.PostId);
 
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.User)
+                .WithMany(u => u.Comments)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Followers>()
                 .HasOne(f => f.Followed)
@@ -94,36 +89,24 @@ namespace Social_network.Server.Data
                 .HasForeignKey(f => f.FollowedId);
 
             modelBuilder.Entity<Followers>()
-                        .HasOne(f => f.User)
-                        .WithMany()
-                        .HasForeignKey(f => f.UserId)
-                        .OnDelete(DeleteBehavior.Restrict);
-
+                .HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Followers>()
-                        .HasIndex(f => new { f.UserId, f.FollowedId })
-                        .IsUnique();
-
-           
-     
+                .HasIndex(f => new { f.UserId, f.FollowedId })
+                .IsUnique();
 
             modelBuilder.Entity<Role>()
-               .HasIndex(r => r.Name)
-               .IsUnique();
-
-
-          
+                .HasIndex(r => r.Name)
+                .IsUnique();
 
             modelBuilder.Entity<Followers>()
                 .HasOne(f => f.Followed)
                 .WithMany()
                 .HasForeignKey(f => f.FollowedId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-     
-
-
-
 
             // Use static, hardcoded values for seeding data
             var userRoleUserId = new Guid("1f18d0df-eaaa-412b-b4fa-62f935cef147");
@@ -133,16 +116,13 @@ namespace Social_network.Server.Data
 
             modelBuilder.Entity<Role>().HasData(
                 new Role { Id = userRoleUserId, Name = "user" },
-                new Role { Id = userRoleAdminId, Name = "admin"}
+                new Role { Id = userRoleAdminId, Name = "admin" }
             );
 
             modelBuilder.Entity<UserState>().HasData(
                 new UserState { Id = userStateActiveId, State = State.Active },
                 new UserState { Id = userStateInactiveId, State = State.Inactive }
             );
-
-
-
         }
 
         public void ConfigureServices(IServiceCollection services)

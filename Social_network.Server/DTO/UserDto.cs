@@ -13,6 +13,8 @@ public class UserDto
     public DateOnly BirthDate { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastModified { get; set; }
+    public string Avatar { get; set; }
+    public string AvatarId { get; set; }
 
 
 }

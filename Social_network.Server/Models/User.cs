@@ -21,8 +21,8 @@ namespace Social_network.Server.Models
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>(); // Changed
         public Avatar? Avatar { get; set; }
         public string? Bio { get; set; }
-        public IEnumerable<Post>? Posts { get; set; }
-        public IEnumerable<Comment>? Comments { get; set; }
+        public IEnumerable<Post> Posts { get; set; }
+        public IEnumerable<Comment> Comments { get; set; }
 
         public DateOnly BirthDate { get; set; }
         public DateTime? LastModified { get; set; }

@@ -12,7 +12,10 @@ namespace Social_network.Server.Extensions
             {
                 Content = comment.Content,
                 Date = comment.Date,
-                ReplyToComment = comment.ReplyToComment
+                ReplyToComment = comment.ReplyToComment,
+                UserAvatar = comment.User.Avatar?.Attachments?.Base64Data ?? null,
+                UserName = comment.User.Nickname,
+                UserNickName = comment.User.Nickname,
             };
         }
     }

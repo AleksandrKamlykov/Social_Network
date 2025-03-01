@@ -14,13 +14,15 @@ namespace Social_network.Server.Repository
         private readonly ApplicationDBContext _context;
         private readonly PasswordHasherService _passwordHasherService;
         private readonly TokenService _tokenService;
+        private readonly IFollowers _followersRepository;
 
 
-        public UserRepository(ApplicationDBContext context, PasswordHasherService passwordHasherService, TokenService tokenService)
+        public UserRepository(ApplicationDBContext context, PasswordHasherService passwordHasherService, TokenService tokenService, IFollowers followersRepository)
         {
             _context = context;
             _passwordHasherService = passwordHasherService;
             _tokenService = tokenService;
+            _followersRepository = followersRepository;
         }
 
         public async Task<User> CreateUser(RegisterUserDTO model)
@@ -76,6 +78,8 @@ namespace Social_network.Server.Repository
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .Include(u => u.State)
+                .Include(u => u.Avatar)
+                .ThenInclude(a => a.Attachments)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
             return user;        }
@@ -86,6 +90,8 @@ namespace Social_network.Server.Repository
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .Include(u => u.State)
+                 .Include(u => u.Avatar)
+                .ThenInclude(a => a.Attachments)
                 .FirstOrDefaultAsync(u => u.Nickname == username);
         }
         public async Task<IEnumerable<User>> GetUsers()
@@ -94,6 +100,7 @@ namespace Social_network.Server.Repository
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .Include(u => u.State)
+                .Include(u => u.Avatar)
                 .ToListAsync();
         }
 
@@ -136,6 +143,7 @@ namespace Social_network.Server.Repository
                 .Include(u => u.UserRoles)
                 .ThenInclude(ur => ur.Role)
                 .Include(u => u.State)
+                .Include(u => u.Avatar)
                 .Where(u => u.Name.Contains(text) || u.Nickname.Contains(text))
                 .ToListAsync();
             return users;
@@ -143,13 +151,24 @@ namespace Social_network.Server.Repository
 
         public async Task<IEnumerable<User>> GetUsersByIds(IEnumerable<Guid> ids)
         {
-            var users = await _context.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role).Include(u => u.State).Where(u => ids.Contains(u.Id)).ToListAsync();
+            var users = await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Include(u => u.State)
+                .Include(u => u.Avatar)
+                .Where(u => ids.Contains(u.Id))
+                .ToListAsync();
             return users;
         }
         public async Task<User> GetUserByNickname(string nickname)
         {
-            return await _context.Users.Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-                .Include(u => u.State).FirstOrDefaultAsync(u => u.Nickname == nickname);
+            return await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .Include(u => u.State)
+                 .Include(u => u.Avatar)
+                .ThenInclude(a => a.Attachments)
+                .FirstOrDefaultAsync(u => u.Nickname == nickname);
         }
         public Task<bool> AddManyUsers(IEnumerable<RegisterUserDTO> usersDto)
         {

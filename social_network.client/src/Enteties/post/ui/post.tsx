@@ -1,18 +1,20 @@
 import { Post } from "../types";
-import { Card } from 'antd';
+import {Card, Typography} from 'antd';
 import dayjs from "dayjs";
-import { PropsWithChildren } from "react";
+import {PropsWithChildren, ReactNode} from "react";
 
 type PostItemProps = & PropsWithChildren & {
     post: Post;
+    head?: (post: Post) => ReactNode;
     };
 
-export const PostItem: React.FC<PostItemProps> = ({post,children}) => {
+export const PostItem: React.FC<PostItemProps> = ({post,children, head}) => {
 return (
-    <Card className="post-item" >
-        <p className="post-content">{post.content}</p>
+    <Card  >
+        {head && head(post)}
+        <Typography style={{fontSize:"1rem"}}>{post.content}</Typography>
         <div className="post-footer">
-            <span className="post-date">{ dayjs(post.date).format("DD.MM.YYYY HH:mm:ss")}</span>
+            <Typography style={{textAlign:"right", fontSize:"0.7rem"}}>{ dayjs(post.date).format("DD.MM.YYYY HH:mm:ss")}</Typography>
         </div>
         {children}
     </Card>

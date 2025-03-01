@@ -4,6 +4,7 @@ import { BASE_URL } from '../const';
 
 interface UseRequestResult<T> {
     data: T | null;
+    reset: () => void;
     error: AxiosError | null;
     loading: boolean;
     get: (url: string) => Promise<void>;
@@ -27,13 +28,23 @@ export const useRequestData = <T = any>(): UseRequestResult<T> => {
                 withCredentials: true,
 
             });
-            setData(response.data);
+            if(response.status.toString().startsWith('2')){
+                setData(response.data);
+            }else{
+                throw new Error(response.statusText);
+            }
+
         } catch (err) {
             setError(err as AxiosError);
         } finally {
             setLoading(false);
         }
     };
+
+    const reset = () => {
+        setData(null);
+        setError(null);
+    }
 
     async function get(url: string): Promise<void> {
         await fetchData(url, 'GET');
@@ -48,6 +59,6 @@ export const useRequestData = <T = any>(): UseRequestResult<T> => {
         await fetchData(url, 'DELETE');
     }
 
-    return { data, error, loading, get, post, put, del };
+    return { data,reset, error, loading, get, post, put, del };
 };
 

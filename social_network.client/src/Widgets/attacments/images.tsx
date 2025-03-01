@@ -5,6 +5,7 @@ import { useRequestData } from '@/Shared/api/useRequestData';
 import { IAttachment } from './types';
 import { useProfile } from '@/context/profileContext/profileContext';
 import { useRequest } from '@/Shared/api/useRequest';
+import { handleAttachment} from "../../../utils/handleAttacjmentFromForm.ts";
 
 interface GalleryProps {
     userId: string;
@@ -35,18 +36,7 @@ export const Gallery: React.FC<GalleryProps> = ({ userId, isOpen }) => {
     }
 
     const handleAddPicture = async (values: any) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(values.picture[0].originFileObj);
-        reader.onload = async () => {
-            const base64Data = reader.result as string;
-            const payload: Omit<IAttachment, "id" | "createdAt"> = {
-                    base64Data:base64Data,
-                    type: "image",
-                    name: values.picture[0].name,
-                    extension: values.picture[0].type,
-                    description: 'Profile picture',
-
-            };
+       const payload = await handleAttachment(values, "image");
 
             try {
                 const response = await post('Attachments/addPicture', payload);
@@ -61,7 +51,7 @@ export const Gallery: React.FC<GalleryProps> = ({ userId, isOpen }) => {
             } finally {
                 form.resetFields();
             }
-        };
+
     };
 
     return (
@@ -72,12 +62,12 @@ export const Gallery: React.FC<GalleryProps> = ({ userId, isOpen }) => {
             {IS_SAME && (
                 <Form form={form} disabled={createLoading} onFinish={handleAddPicture}>
                     <Form.Item
-                        name="picture"
-                        valuePropName="fileList"
+                        name="attachment"
+                        valuePropName="attachment"
                         getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
                         rules={[{ required: true, message: 'Please upload a picture!' }]}
                     >
-                        <Upload name="picture" listType="picture" beforeUpload={() => false}>
+                        <Upload name="attachment" listType="picture" beforeUpload={() => false}>
                             <Button icon={<UploadOutlined />}>Click to Upload</Button>
                         </Upload>
                     </Form.Item>

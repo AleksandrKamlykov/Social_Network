@@ -3,24 +3,35 @@ import { useParams } from 'react-router-dom';
 import { useRequestData } from '@/Shared/api/useRequestData';
 import { IUser } from '@/Enteties/user/types';
 import { useAppSelector } from '@/App/store/AppStore';
+import {useRequest} from "@/Shared/api/useRequest.ts";
 
 interface ProfileContextProps {
     profile: IUser | null;
     loading: boolean;
     IS_SAME: boolean;
+    updateAvatar:(avatar:string)=>void;
 }
 
 const ProfileContext = createContext<ProfileContextProps | undefined>(undefined);
 
 export const ProfileProvider: React.FC<{ children: React.ReactNode; }> = ({ children }) => {
     const { nickname } = useParams();
-    const { data: profile, get, loading } = useRequestData<IUser>();
+    const {  get, loading } = useRequest<IUser>();
     const { nickname: userNickame } = useAppSelector(state => state.user);
+
+    const [profile, setProfile] = useState<IUser | null>(null);
+
+async function fetchProfile(nickname: string) {
+        const res = await get(`User/getByNickname/${nickname}`);
+        if (res.data && res.status === 200) {
+            setProfile(res.data);
+        }
+}
 
 
     useEffect(() => {
         if (nickname) {
-            get(`User/getByNickname/${nickname}`);
+          fetchProfile(nickname);
         }
     }, [nickname]);
 
@@ -30,8 +41,12 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode; }> = ({ chil
     }
         , [nickname, profile, userNickame]);
 
+    function updateAvatar(avatar:string){
+        setProfile((prev)=> prev ?({...prev,avatar}) : null)
+    }
+
     return (
-        <ProfileContext.Provider value={{ profile, loading, IS_SAME }}>
+        <ProfileContext.Provider value={{ profile, loading, IS_SAME,updateAvatar }}>
             {children}
         </ProfileContext.Provider>
     );

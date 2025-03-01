@@ -71,16 +71,36 @@ namespace Social_network.Server.Repository
             var res = await _context.Pictures.Include(p=> p.Attachment).Where(p => p.UserId == userId).Select(p => p.Attachment).ToListAsync();
             return res;
         }
-
-        public async Task AddAudioAsync(Attachment audio)
+        public async Task<IEnumerable<Attachment>> GetAudiosByUser(Guid userId)
         {
-           // _context.Audios.Add(audio);
-            await _context.SaveChangesAsync();
+            var res = await _context.Audios.Include(p => p.Attachment).Where(p => p.UserId == userId).Select(p => p.Attachment).ToListAsync();
+            return res;
         }
 
-        public async Task AddAvatarAsync(Attachment avatar)
+        public async Task AddAudioAsync(Attachment audio, User user)
         {
-           // _context.Avatars.Add(avatar);
+            var res = this.AddAsync(audio);
+
+            Audio a = new Audio
+            {
+                AttachmentId = res.Result.Id,
+                UserId = user.Id
+            };
+
+            _context.Audios.Add(a);
+            await _context.SaveChangesAsync();
+        }
+        public async Task AddAvatarAsync(Attachment avatar, User user)
+        {
+            var res = this.AddAsync(avatar);
+
+            Avatar picture = new Avatar
+            {
+                AttachmentId = res.Result.Id,
+                UserId = user.Id
+            };
+
+            _context.Avatars.Add(picture);
             await _context.SaveChangesAsync();
         }
     }

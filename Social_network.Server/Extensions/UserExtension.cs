@@ -16,7 +16,9 @@ public static class UserExtension
             CreatedAt = user.CreatedAt,
             LastModified = user.LastModified,
             Roles = user.UserRoles?.Where(ur => ur.Role != null).Select(ur => ur.Role.Name).ToList() ?? new List<string>(),
-            State = user.State.State
+            State = user.State.State,
+            Avatar = user.Avatar?.Attachments?.Base64Data ?? null,
+            AvatarId = user.Avatar?.AttachmentId.ToString() ?? null
         };
     }
 }

@@ -9,7 +9,7 @@ const { Panel } = Collapse;
 
 export const CommentsList: React.FC<{ postId: string; }> = ({ postId }) => {
 
-  const { data, get, loading } = useRequestData<Comment[]>();
+  const { data, get, loading,reset } = useRequestData<Comment[]>();
   const { post } = useRequest<Comment[]>();
 
 
@@ -35,6 +35,8 @@ export const CommentsList: React.FC<{ postId: string; }> = ({ postId }) => {
   async function toggleComments(id: string | undefined) {
     if (id) {
       await fetchComments();
+    }else{
+      reset();
     }
   }
 

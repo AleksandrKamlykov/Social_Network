@@ -10,7 +10,10 @@ public static class PostExtensions
             Content = post.Content,
             Date = post.Date,
             Likes = post.Likes,
-            UserId = post.UserId
+            UserId = post.UserId,
+            UserName = post.User?.Name,
+            UserAvatarId = post.User?.Avatar?.AttachmentId.ToString() ?? null,
+            UserNickName = post.User?.Nickname,
         };
     }
 }

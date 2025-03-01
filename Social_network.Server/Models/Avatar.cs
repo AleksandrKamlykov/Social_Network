@@ -8,6 +8,7 @@ namespace Social_network.Server.Models
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public User User { get; set; }
-        public List<Attachment> Attachments { get; set; } = new List<Attachment>();
+        public Guid AttachmentId { get; set; }
+        public Attachment Attachments { get; set; }
     }
 }
