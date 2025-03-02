@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Social_network.Server.Data;
 
@@ -11,9 +12,11 @@ using Social_network.Server.Data;
 namespace Social_network.Server.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20250302124300_add chat")]
+    partial class addchat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace Social_network.Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ChatRoomUser", b =>
-                {
-                    b.Property<Guid>("ChatRoomsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ParticipantsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ChatRoomsId", "ParticipantsId");
-
-                    b.HasIndex("ParticipantsId");
-
-                    b.ToTable("ChatRoomUser");
-                });
 
             modelBuilder.Entity("Social_network.Server.Models.Attachment", b =>
                 {
@@ -293,6 +281,9 @@ namespace Social_network.Server.Migrations
                     b.Property<DateOnly>("BirthDate")
                         .HasColumnType("date");
 
+                    b.Property<Guid?>("ChatRoomId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -322,6 +313,8 @@ namespace Social_network.Server.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ChatRoomId");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -377,21 +370,6 @@ namespace Social_network.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("ChatRoomUser", b =>
-                {
-                    b.HasOne("Social_network.Server.Models.ChatRoom", null)
-                        .WithMany()
-                        .HasForeignKey("ChatRoomsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Social_network.Server.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Social_network.Server.Models.Audio", b =>
                 {
                     b.HasOne("Social_network.Server.Models.Attachment", "Attachment")
@@ -439,9 +417,9 @@ namespace Social_network.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("Social_network.Server.Models.User", "Sender")
-                        .WithMany("ChatMessages")
+                        .WithMany()
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ChatRoom");
@@ -473,7 +451,7 @@ namespace Social_network.Server.Migrations
                     b.HasOne("Social_network.Server.Models.User", "Followed")
                         .WithMany()
                         .HasForeignKey("FollowedId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Social_network.Server.Models.User", "User")
@@ -519,6 +497,10 @@ namespace Social_network.Server.Migrations
 
             modelBuilder.Entity("Social_network.Server.Models.User", b =>
                 {
+                    b.HasOne("Social_network.Server.Models.ChatRoom", null)
+                        .WithMany("Participants")
+                        .HasForeignKey("ChatRoomId");
+
                     b.HasOne("Social_network.Server.Models.UserState", "State")
                         .WithMany()
                         .HasForeignKey("StateId")
@@ -554,6 +536,8 @@ namespace Social_network.Server.Migrations
             modelBuilder.Entity("Social_network.Server.Models.ChatRoom", b =>
                 {
                     b.Navigation("Messages");
+
+                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("Social_network.Server.Models.Post", b =>
@@ -571,8 +555,6 @@ namespace Social_network.Server.Migrations
                     b.Navigation("Audios");
 
                     b.Navigation("Avatar");
-
-                    b.Navigation("ChatMessages");
 
                     b.Navigation("Comments");
 

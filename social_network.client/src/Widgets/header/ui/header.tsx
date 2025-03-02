@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Layout, Menu } from 'antd';
-import { UserOutlined, HomeOutlined, LogoutOutlined } from '@ant-design/icons';
+import { UserOutlined, HomeOutlined, LogoutOutlined, MessageOutlined } from '@ant-design/icons';
 import { NavLink, useLocation } from 'react-router-dom';
 import { pathes } from '@/App/router/pathes';
 import { pathRouterBuilder } from '@/Shared/utils/pathRouterBuilder';
@@ -55,7 +55,15 @@ export const AppHeader: React.FC = () => {
             link: pathes.users.absolute,
             roles: [Roles.User]
 
-        }, {
+        },
+        {
+            key: pathes.chat.id,
+            icon: <MessageOutlined />,
+            title: `Chat`,
+            link: pathes.chat.absolute,
+            roles: [Roles.User]
+        },
+        {
             key: pathes.admin.absolute,
             icon: <UserOutlined />,
             title: `Admin`,

@@ -11,6 +11,7 @@ const AuthPage = lazy(() => import("@/Pages/Auth"));
 const RegistrationPage = lazy(() => import("@/Pages/Registration"));
 const UsersPage = lazy(() => import("@/Pages/Users"));
 const AdminPage = lazy(() => import("@/Pages/Admin"));
+const ChatPage = lazy(() => import("@/Pages/Chat"));
 
 const routes: RouteObject[] = [
     {
@@ -38,7 +39,11 @@ const routes: RouteObject[] = [
                 id: pathes.admin.id,
                 element: <AdminPage />
             },
-
+            {
+                path: pathes.chat.relative,
+                id: pathes.chat.id,
+                element: <ChatPage />
+            },
             {
                 path: "*",
                 element: <Navigate to={pathes.home.relative} />

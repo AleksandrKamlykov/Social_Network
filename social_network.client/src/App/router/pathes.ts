@@ -31,5 +31,10 @@ export const pathes = {
         id: "users",
         relative: "users",
         absolute: "/users"
+    },
+    chat:{
+        id: "chat",
+        relative: "chat",
+        absolute: "/chat"
     }
 } as const;

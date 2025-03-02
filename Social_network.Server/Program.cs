@@ -8,6 +8,7 @@ using Social_network.Server.Repository;
 using System.Text;
 using System.Text.Json.Serialization;
 using Social_network.Server.Controllers;
+using Social_network.Server.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,6 +89,9 @@ builder.Services.AddScoped<IComment, CommentsRepository>();
 builder.Services.AddScoped<IFollowers, FollowersRepository>();
 builder.Services.AddScoped<IAttachmentRepository, AttachmentRepository>();
 
+builder.Services.AddSignalR();
+
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
@@ -110,6 +114,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.UseRouting();
+
+app.MapHub<ChatHub>("/chathub");
+
 
 app.MapFallbackToFile("/index.html");
 

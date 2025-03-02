@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {  useEffect } from 'react';
 import { useRequestData } from '@/Shared/api/useRequestData';
 import { IAttachment } from './types';
 import { Col, Row, Spin, Button, Form, Upload, message } from 'antd';

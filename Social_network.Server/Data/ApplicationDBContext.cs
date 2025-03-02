@@ -21,6 +21,9 @@ namespace Social_network.Server.Data
         public DbSet<Audio> Audios { get; set; }
         public DbSet<Attachment> Attachments { get; set; }
 
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<ChatRoom> ChatRooms { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -37,6 +40,18 @@ namespace Social_network.Server.Data
                 .HasMany(u => u.Posts)
                 .WithOne(p => p.User)
                 .HasForeignKey(p => p.UserId);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Comments)
+                .WithOne(c => c.User)
+                .HasForeignKey(c => c.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.ChatMessages)
+                .WithOne(cm => cm.Sender)
+                .HasForeignKey(cm => cm.SenderId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<UserRole>()
                 .HasKey(ur => new { ur.UserId, ur.RoleId });
@@ -102,11 +117,25 @@ namespace Social_network.Server.Data
                 .HasIndex(r => r.Name)
                 .IsUnique();
 
-            modelBuilder.Entity<Followers>()
-                .HasOne(f => f.Followed)
-                .WithMany()
-                .HasForeignKey(f => f.FollowedId)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(cm => cm.ChatRoom)
+                .WithMany(cr => cr.Messages)
+                .HasForeignKey(cm => cm.ChatRoomId);
+
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(cm => cm.Sender)
+                .WithMany(u => u.ChatMessages)
+                .HasForeignKey(cm => cm.SenderId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ChatRoom>()
+                .HasMany(cr => cr.Messages)
+                .WithOne(cm => cm.ChatRoom)
+                .HasForeignKey(cm => cm.ChatRoomId);
+
+            modelBuilder.Entity<ChatRoom>()
+                .HasMany(cr => cr.Participants)
+                .WithMany(u => u.ChatRooms);
 
             // Use static, hardcoded values for seeding data
             var userRoleUserId = new Guid("1f18d0df-eaaa-412b-b4fa-62f935cef147");

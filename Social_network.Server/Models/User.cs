@@ -31,5 +31,7 @@ namespace Social_network.Server.Models
         public IEnumerable<User> Followers { get; set; }
         public IEnumerable<Picture> Pictures { get; set; }
         public IEnumerable<Audio> Audios { get; set; }
+        public IEnumerable<ChatMessage> ChatMessages { get; set; }
+        public IEnumerable<ChatRoom> ChatRooms { get; set; }
     }
 }
