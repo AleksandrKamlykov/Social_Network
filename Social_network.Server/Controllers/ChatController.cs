@@ -70,6 +70,25 @@ namespace Social_network.Server.Controllers
 
             return Ok(response);
         }
+        [HttpGet("rooms/{userId}")]
+        public async Task<ActionResult<IEnumerable<ChatRoom>>> GetChatRooms(Guid userId)
+        {
+            var chatRooms = await _context.ChatRooms
+                .Include(cr => cr.Participants)
+                .ThenInclude(p => p.State)
+                .Include(cr => cr.Participants)
+                .ThenInclude(p => p.Avatar)
+                .Where(cr => cr.Participants.Any(p => p.Id == userId))
+                .ToListAsync();
+
+            var res = chatRooms.Select(cr => new
+            {
+                Id = cr.Id,
+                Participant = cr.Participants.Where(u => u.Id != userId).Select(p => p.ToDto()).FirstOrDefault()
+            });
+
+            return Ok(res);
+        }
 
     }
     

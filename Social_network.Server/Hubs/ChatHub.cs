@@ -37,13 +37,22 @@ namespace Social_network.Server.Hubs
             _context.ChatMessages.Add(chatMessage);
             await _context.SaveChangesAsync();
 
+            var sender = await _context.Users.FindAsync(senderId);
+
             var msg = new
             {
                 chatMessage.Id,
                 chatMessage.ChatRoomId,
                 chatMessage.SenderId,
                 chatMessage.Message,
-                chatMessage.SentAt
+                chatMessage.SentAt,
+                Sender = new
+                {
+                    sender.Id,
+                    sender.Name,
+                    sender.Nickname,
+                    sender.Avatar
+                }
             };
 
             await Clients.Group(chatRoomId.ToString()).SendAsync("ReceiveMessage", msg);
