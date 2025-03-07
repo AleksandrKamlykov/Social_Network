@@ -1,27 +1,17 @@
 import { AppHeader } from "@/Widgets/header";
 import { Content } from "antd/es/layout/layout";
-import { PropsWithChildren, Suspense, useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import {  Suspense, useEffect } from "react";
+import { Outlet } from "react-router-dom";
 import { useAppSelector } from "../store/AppStore";
-import { pathRouterBuilder } from "@/Shared/utils/pathRouterBuilder";
-import { pathes } from "../router/pathes";
-import { useWSConnection, WSConnectionProvider } from "@/Contexts/WSConnectionContext";
+import { useServerConnection, ServerConnectionProvider } from "@/Contexts/ServerConnectionContext.tsx";
 import { notification } from "antd";
+import {toLowerFirsLetterInObj} from "../../../utils/toLowerFirsLetterInObj.ts";
 
 export const AuthedLayout: React.FC = () => {
 
-    // const { id, nickname } = useAppSelector(state => state.user);
 
-    // const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     if (id) {
-    //         navigate(pathRouterBuilder(pathes.profile.absolute, { nickname }));
-    //     }
-    // }
-    //     , [id, navigate]);
-
-    return (<WSConnectionProvider>
+    return (<ServerConnectionProvider>
         <NotyManager />
         <AppHeader />
         <Content
@@ -37,33 +27,43 @@ export const AuthedLayout: React.FC = () => {
                 <Outlet />
             </Suspense>
         </Content>
-    </WSConnectionProvider>);
+    </ServerConnectionProvider>);
 };
 
-const NotyManager: React.FC<PropsWithChildren> = ({ children }) => {
+const NotyManager: React.FC= () => {
     const { id } = useAppSelector(state => state.user);
 
     const [api, contextHolder] = notification.useNotification();
-    const connection = useWSConnection();
+    const connection = useServerConnection();
 
 
     useEffect(() => {
         if (connection) {
-            connection.on('ReceiveMessage', msg => {
 
-                if (msg.sender?.id === id) return;
+            connection.addEventListener("message",event=>{
+                const message = JSON.parse(event.data);
+                const msg = toLowerFirsLetterInObj(message);
 
                 console.log(msg);
-                api.info({
-                    message: `From: ${msg.sender?.name}`,
-                    description: msg.message,
-                    placement: "topRight",
-                });
-                //message.info(`New message from ${msg.sender?.name}: ${msg.message}`);
-            });
+
+                if(msg.senderId !== id) {
+                    api.info({
+                        message: `From: ${msg.senderName}`,
+                        description: msg.message,
+                        placement: "topRight",
+                    });
+                };
+
+
+
+
+
+            })
+
         }
     }, [connection]);
 
     return (<>
-        {contextHolder}</>);
+        {contextHolder}
+    </>);
 };

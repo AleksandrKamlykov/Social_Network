@@ -1,13 +1,14 @@
 import { pathes } from "@/App/router/pathes";
 import { IUser } from "@/Enteties/user/types";
 import { pathRouterBuilder } from "@/Shared/utils/pathRouterBuilder";
-import { Avatar, Button, List, Space, Typography } from "antd";
+import {Avatar, Button, List, Modal, Space, Typography} from "antd";
 import { NavLink } from "react-router-dom";
 import { useRequest } from "@/Shared/api/useRequest";
-import React, {useEffect} from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 import {useUsersContext} from "@/Pages/Users/ui/Users.tsx";
-import { UserAddOutlined, UserDeleteOutlined } from "@ant-design/icons";
+import {MessageOutlined, UserAddOutlined, UserDeleteOutlined} from "@ant-design/icons";
 import { Spin } from "antd";
+import {SendMessageForm} from "@/features/sendMessageForm";
 
 type UsersListProps = {
     users: IUser[];
@@ -15,16 +16,40 @@ type UsersListProps = {
 };
 
 export const UsersList: React.FC<UsersListProps> = ({ users, followers }) => {
+
+    const { loading: loadingSendMessage, post } = useRequest();
+
+const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+
+async function sendMessage(message: string) {
+        const res = await post(`chat/message/send/${selectedUser?.id}`, { messageText:message });
+}
+
     return (
-        <List
-            itemLayout="horizontal"
-            dataSource={users}
-            renderItem={user => <UserItem user={user} followers={followers} />}
-        />
+      <>
+          <List
+              itemLayout="horizontal"
+              dataSource={users}
+              renderItem={user => <UserItem user={user} followers={followers} extra={<>
+                  <Button type={"primary"} icon={<MessageOutlined />} onClick={()=>setSelectedUser(user)}>
+                      Send Message
+                  </Button>
+              </>} />}
+          />
+
+          <Modal
+              title={`Send Message to ${selectedUser?.name}`}
+              open={Boolean(selectedUser)}
+              onCancel={() => setSelectedUser(null)}
+              footer={null}
+          >
+              <SendMessageForm onSendMessage={sendMessage} loading={loadingSendMessage} />
+          </Modal>
+      </>
     );
 };
 
-const UserItem: React.FC<{ user: IUser; followers: string[]; }> = ({ user, followers }) => {
+const UserItem: React.FC<{ user: IUser; followers: string[]; extra:ReactNode }> = ({ user, followers, extra }) => {
 
     const {follow, unFollow}= useUsersContext();
     const [avatarBase64, setAvatarBase64] = React.useState<string | null>(null);
@@ -92,9 +117,13 @@ const UserItem: React.FC<{ user: IUser; followers: string[]; }> = ({ user, follo
                     </Space>
                 }
             />
-            {isFollowed ?
-                <Button {...sharedBtnProps}/>
-                : <Button {...sharedBtnProps}/>}
+           <div style={{display: "flex", gap:20, alignItems:"center"}}>
+               {isFollowed ?
+                   <Button {...sharedBtnProps}/>
+                   : <Button {...sharedBtnProps}/>}
+
+               {extra}
+           </div>
         </List.Item>
     );
 };

@@ -6,9 +6,9 @@ import { useRequest } from '@/Shared/api/useRequest.ts';
 import { Button, Card, Form, Input, Layout, List, Spin, Typography } from "antd";
 import dayjs from "dayjs";
 import { theme } from 'antd';
-import { WSConnectionProvider, useWSConnection } from '@/Contexts/WSConnectionContext.tsx';
-import * as signalR from '@microsoft/signalr';
+import { ServerConnectionProvider, useServerConnection } from '@/Contexts/ServerConnectionContext.tsx';
 import { UserListItem } from '@/Enteties/user/ui/userListItem';
+import {toLowerFirsLetterInObj} from "../../../../utils/toLowerFirsLetterInObj.ts";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -18,69 +18,84 @@ export const ChatPage = () => {
     const [form] = Form.useForm();
 
     const { id, name } = useAppSelector(state => state.user);
-    const connection = useWSConnection();
+    const connection = useServerConnection();
     const [messages, setMessages] = useState<any[]>([]);
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
     const [chatRoomId, setChatRoomId] = useState<string | null>(null);
 
-    const { data: followers, loading: usersLoading, get } = useRequestData<IUser[]>();
+    const { data: chats, loading: usersLoading, get: fetchChats } = useRequestData<IUser[]>();
 
-    const { data: chats, loading: chatListLoading, get: fetchChatList } = useRequestData<{ id: string, participant: IUser; }[]>();
+
+
+    const {post: sendMessageRequest, loading:loadingSendMessage} = useRequest();
 
 
     const { get: fetchChatHistory, loading: chatLoading } = useRequest();
     // const { loading: chatRoomLoading, get: fetchChatRoom } = useRequest();
 
     const fetchUsers = async () => {
-        await get(`Followers/following/${id}`);
+      const res =  await fetchChats(`chat/chat-users/${id}`);
+
+
     };
-    const fetchChats = async () => {
-        await fetchChatList(`chat/rooms/${id}`);
-    };
+
+
+    async function fetchAllMessages() {
+        if (selectedUser) {
+            const res = await fetchChatHistory(`chat/messages/${selectedUser.id}`);
+
+            setMessages(res.data);
+        }
+    }
+
+    useEffect(() => {
+        if(selectedUser){
+            fetchAllMessages();
+        }
+    }, [selectedUser]);
 
     useEffect(() => {
         fetchUsers();
-        fetchChats();
     }, []);
 
     useEffect(() => {
         if (connection) {
-            connection.on('ReceiveMessage', message => {
-                setMessages(messages => [message, ...messages]);
-            });
+
+            connection.addEventListener("message",event=>{
+                const message = JSON.parse(event.data);
+                const msg           = toLowerFirsLetterInObj(message);
+                setMessages(messages => [msg, ...messages]);
+            })
+
         }
     }, [connection]);
 
-    useEffect(() => {
-        if (chatRoomId && connection) {
-            connection.invoke('JoinRoom', chatRoomId);
 
-            fetchChatHistory(`chat/rooms/${chatRoomId}/messages`)
-                .then(data => setMessages(data.data));
-        }
-    }, [connection, chatRoomId]);
 
-    const sendMessage = async (message: string) => {
-        if (id && connection && connection.state === signalR.HubConnectionState.Connected) {
-            try {
-                await connection.invoke('SendMessage', chatRoomId, id, message);
-                form.resetFields();
-            } catch (e) {
-                console.error(e);
-            }
-        } else {
-            alert('No connection to server yet.');
-        }
+    const sendMessage = async (message: string, recieverId:string) => {
+
+
+       try{
+           const res = await sendMessageRequest(`chat/message/send/${recieverId}`,  { messageText:message });
+           form.resetFields();
+       }catch (e){
+              console.error(e);
+       }
+
+
     };
 
     const onFinished = async (values: any) => {
-        await sendMessage(values.message);
+
+        if(!selectedUser) return;
+        console.log("onFinished", values);
+
+        await sendMessage(values.message, selectedUser.id);
     };
 
     const selectUser = async (user: IUser) => {
         setSelectedUser(user);
-        // const { data: chatRoom } = await fetchChatRoom(`chat/rooms/${id}/${user.id}`);
-        // setChatRoomId(chatRoom.id);
+
     };
 
     const { token } = theme.useToken();
@@ -89,7 +104,7 @@ export const ChatPage = () => {
     const borderRadius = token.borderRadius;
 
     return (
-        <WSConnectionProvider>
+        <ServerConnectionProvider>
             <Layout style={{ height: '80vh', padding: 0 }}>
                 <Sider width={300} style={{ background: '#fff', padding: '20px' }}>
                     <Title level={3}>Chats</Title>
@@ -99,7 +114,7 @@ export const ChatPage = () => {
                         dataSource={chats ?? []}
                         renderItem={chat => (
                             <List.Item onClick={() => {
-                                selectUser(chat.participant);
+                                selectUser(chat);
                                 setChatRoomId(chat.id);
                             }}
                                 style={{
@@ -111,7 +126,7 @@ export const ChatPage = () => {
 
                                 }}
                             >
-                                <UserListItem user={chat.participant} />
+                                <UserListItem user={chat} />
                             </List.Item>
                         )}
                     />
@@ -125,7 +140,7 @@ export const ChatPage = () => {
                     <Content style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
                         <div style={{ flex: 1, overflowY: 'scroll', border: '1px solid #ccc', padding: '10px', display: "flex", flexDirection: "column-reverse", gap: 12 }}>
                             {chatLoading ? <Spin /> : (
-                                messages?.map((msg, index) => {
+                                messages?.map((msg) => {
                                     const isMyMessage = msg.senderId === id;
                                     return (
                                         <Card
@@ -144,8 +159,8 @@ export const ChatPage = () => {
                             }
                         </div>
                         {selectedUser && (
-                            <Form form={form} layout="inline" onFinish={onFinished} style={{ marginTop: '20px', display: 'flex', width: '100%' }}>
-                                <Form.Item style={{ flex: 1, marginRight: '10px' }}>
+                            <Form form={form} disabled={loadingSendMessage} layout="inline" onFinish={onFinished} style={{ marginTop: '20px', display: 'flex', width: '100%' }}>
+                                <Form.Item name={"message"} style={{ flex: 1, marginRight: '10px' }}>
                                     <Input
                                         required
                                         name="message"
@@ -153,13 +168,13 @@ export const ChatPage = () => {
                                     />
                                 </Form.Item>
                                 <Form.Item>
-                                    <Button type="primary" htmlType="submit">Send</Button>
+                                    <Button loading={loadingSendMessage} type="primary" htmlType="submit">Send</Button>
                                 </Form.Item>
                             </Form>
                         )}
                     </Content>
                 </Layout>
             </Layout>
-        </WSConnectionProvider>
+        </ServerConnectionProvider>
     );
 };
