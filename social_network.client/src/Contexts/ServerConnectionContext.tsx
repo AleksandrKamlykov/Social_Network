@@ -1,9 +1,9 @@
 import React, { createContext, PropsWithChildren, useContext, useEffect, useState } from 'react';
-import * as signalR from '@microsoft/signalr';
-import { notification } from 'antd';
-import {useAppSelector} from "@/App/store/AppStore.ts";
 
-const baseUrl = 'https://localhost:7075';
+import { notification } from 'antd';
+import { useAppSelector } from "@/App/store/AppStore.ts";
+import { BASE_URL } from '@/Shared/const';
+
 
 const ServerConnectionContext = createContext<EventSource | null>(null);
 
@@ -32,10 +32,10 @@ export const ServerConnectionProvider: React.FC<PropsWithChildren> = ({ children
 
     const { id } = useAppSelector(state => state.user);
 
-const [connection, setConnection] = useState<EventSource | null>(null);
+    const [connection, setConnection] = useState<EventSource | null>(null);
 
     useEffect(() => {
-        const eventSource = new EventSource(`${baseUrl}/api/chat/subscribe/${id}`);
+        const eventSource = new EventSource(`${BASE_URL}chat/subscribe/${id}`);
 
         eventSource.onopen = () => {
             console.log('Connected!');

@@ -1,18 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Social_network.Server.Data;
 using Social_network.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using Social_network.Server.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
-using NuGet.Protocol.Plugins;
 using System.Text.Json.Serialization;
 using System.Text.Json;
-using Social_network.Server.DTO;
 using Social_network.Server.Extensions;
 
 namespace Social_network.Server.Controllers

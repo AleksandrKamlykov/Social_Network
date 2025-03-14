@@ -1,8 +1,6 @@
 export function toLowerFirsLetterInObj(obj: Record<string, any>) {
-  const newObj = {};
+  const newObj: Record<string, any> = {};
   for (const key in obj) {
-
-
     newObj[key[0].toLowerCase() + key.slice(1)] = obj[key];
   }
 

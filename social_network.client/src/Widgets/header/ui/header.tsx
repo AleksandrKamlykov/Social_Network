@@ -77,7 +77,7 @@ export const AppHeader: React.FC = () => {
     return (
 
         <Header className="header">
-            <Menu theme="dark" mode="horizontal" selectedKeys={[pathname]}>
+            <Menu theme="dark" mode="horizontal" selectedKeys={[pathname]} style={{ flex: 1 }}>
                 {menuItems.map(item => (
                     <Menu.Item icon={item.icon} key={item.link}>
                         <NavLink to={item.link} >

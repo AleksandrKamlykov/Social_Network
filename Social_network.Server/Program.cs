@@ -76,7 +76,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowCredentials", builder =>
     {
-        builder.WithOrigins("https://localhost:55488") // Вкажіть дозволені джерела
+        builder.WithOrigins("https://localhost:55488", "45.58.159.52") // Вкажіть дозволені джерела
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();

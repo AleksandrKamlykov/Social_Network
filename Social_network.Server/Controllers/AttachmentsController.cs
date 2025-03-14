@@ -105,8 +105,8 @@ namespace Social_network.Server.Controllers
             var user = await _userRepository.GetUserByToken(token);
 
 
-            _attachmentRepository.AddAvatarAsync(avatar, user);
-            return Ok();
+           await _attachmentRepository.AddAvatarAsync(avatar, user);
+            return CreatedAtAction(nameof(GetById), new { id = avatar.Id }, avatar);
         }
     }
 }
